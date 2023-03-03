@@ -1,0 +1,23 @@
+{
+  "name": "todo-vault",
+  "description": "css build scripts for todo-vault",
+  "version": "0.1.0",
+  "author": "Tristan Druyen <tristan@vault81.mozmail.com>",
+  "license": "AGPL",
+  "scripts": {
+    "css:pkg": "npm run tailwind:pkg",
+    "css:watch": "npm run tailwind:watch",
+    "tailwind:pkg": "tailwindcss build -i ./tailwind.css -o ./style/tailwind.css",
+    "tailwind:watch": "tailwindcss build -i ./tailwind.css -o ./style/tailwind.css --watch"
+  },
+  "dependencies": {
+    "flowbite": "1.6.3",
+    "rustywind": "0.15.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "0.5.3",
+    "@tailwindcss/typography": "0.5.9",
+    "flowbite-typography": "^1.0.3",
+    "tailwindcss": "3.2.7"
+  }
+}

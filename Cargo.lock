@@ -1463,29 +1463,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "start-axum"
-version = "0.1.0"
-dependencies = [
- "axum",
- "cfg-if",
- "console_error_panic_hook",
- "console_log",
- "http",
- "leptos",
- "leptos_axum",
- "leptos_meta",
- "leptos_router",
- "log",
- "simple_logger",
- "thiserror",
- "tokio",
- "tower",
- "tower-http 0.3.5",
- "tracing",
- "wasm-bindgen",
-]
-
-[[package]]
 name = "syn"
 version = "1.0.109"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1577,6 +1554,29 @@ name = "tinyvec_macros"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
+
+[[package]]
+name = "todo-vault"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "cfg-if",
+ "console_error_panic_hook",
+ "console_log",
+ "http",
+ "leptos",
+ "leptos_axum",
+ "leptos_meta",
+ "leptos_router",
+ "log",
+ "simple_logger",
+ "thiserror",
+ "tokio",
+ "tower",
+ "tower-http 0.3.5",
+ "tracing",
+ "wasm-bindgen",
+]
 
 [[package]]
 name = "tokio"
