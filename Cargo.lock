@@ -23,6 +23,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "app"
+version = "0.1.0"
+dependencies = [
+ "cfg-if",
+ "http",
+ "leptos",
+ "leptos_axum",
+ "leptos_meta",
+ "leptos_router",
+ "thiserror",
+]
+
+[[package]]
 name = "async-recursion"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -270,6 +283,12 @@ dependencies = [
 
 [[package]]
 name = "convert_case"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6245d59a3e82a7fc217c5828a6692dbc6dfb63a0c8c90495621f7b9d79704a0e"
+
+[[package]]
+name = "convert_case"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec182b0ca2f35d8fc196cf3404988fd8b8c739a4d270ff118a398feb0cbec1ca"
@@ -294,6 +313,19 @@ checksum = "1bfb12502f3fc46cca1bb51ac28df9d618d813cdc3d2f25b9fe775a34af26bb3"
 dependencies = [
  "generic-array",
  "typenum",
+]
+
+[[package]]
+name = "derive_more"
+version = "0.99.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4fb810d30a7c1953f91334de7244731fc3f3c10d7fe163338a35b9f640960321"
+dependencies = [
+ "convert_case 0.4.0",
+ "proc-macro2",
+ "quote",
+ "rustc_version",
+ "syn",
 ]
 
 [[package]]
@@ -813,7 +845,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ee20bcdf0a03cd81aefbe80eede8dc4d5f7861175ab880eb728a2952e43aa50"
 dependencies = [
  "cfg-if",
- "convert_case",
+ "convert_case 0.6.0",
  "html-escape",
  "itertools",
  "leptos_dom",
@@ -1395,6 +1427,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "server"
+version = "0.1.0"
+dependencies = [
+ "app",
+ "axum",
+ "console_error_panic_hook",
+ "console_log",
+ "derive_more",
+ "http",
+ "leptos",
+ "leptos_axum",
+ "leptos_dom",
+ "leptos_meta",
+ "leptos_router",
+ "log",
+ "simple_logger",
+ "thiserror",
+ "tokio",
+ "tower",
+ "tower-http 0.3.5",
+ "tracing",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "sha2"
 version = "0.10.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1460,29 +1517,6 @@ checksum = "02e2d2db9033d13a1567121ddd7a095ee144db4e1ca1b1bda3419bc0da294ebd"
 dependencies = [
  "libc",
  "winapi",
-]
-
-[[package]]
-name = "start-axum"
-version = "0.1.0"
-dependencies = [
- "axum",
- "cfg-if",
- "console_error_panic_hook",
- "console_log",
- "http",
- "leptos",
- "leptos_axum",
- "leptos_meta",
- "leptos_router",
- "log",
- "simple_logger",
- "thiserror",
- "tokio",
- "tower",
- "tower-http 0.3.5",
- "tracing",
- "wasm-bindgen",
 ]
 
 [[package]]
@@ -1913,6 +1947,18 @@ name = "wasm-bindgen-shared"
 version = "0.2.84"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0046fef7e28c3804e5e38bfa31ea2a0f73905319b677e57ebe37e49358989b5d"
+
+[[package]]
+name = "wasm-lib"
+version = "0.1.0"
+dependencies = [
+ "app",
+ "console_error_panic_hook",
+ "console_log",
+ "leptos",
+ "log",
+ "wasm-bindgen",
+]
 
 [[package]]
 name = "web-sys"
