@@ -1,14 +1,13 @@
-use app::error_template::AppError;
-use app::error_template::{ErrorTemplate, ErrorTemplateProps};
-use axum::response::Response as AxumResponse;
+use std::sync::Arc;
+
+use app::error_template::{AppError, ErrorTemplate, ErrorTemplateProps};
 use axum::{
     body::{boxed, Body, BoxBody},
     extract::Extension,
     http::{Request, Response, StatusCode, Uri},
-    response::IntoResponse,
+    response::{IntoResponse, Response as AxumResponse},
 };
 use leptos::*;
-use std::sync::Arc;
 use tower::ServiceExt;
 use tower_http::services::ServeDir;
 
@@ -34,7 +33,10 @@ pub async fn file_and_error_handler(
     }
 }
 
-async fn get_static_file(uri: Uri, root: &str) -> Result<Response<BoxBody>, (StatusCode, String)> {
+async fn get_static_file(
+    uri: Uri,
+    root: &str,
+) -> Result<Response<BoxBody>, (StatusCode, String)> {
     let req = Request::builder()
         .uri(uri.clone())
         .body(Body::empty())

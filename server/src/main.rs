@@ -2,14 +2,16 @@ mod fileserv;
 
 #[tokio::main]
 async fn main() {
+    use std::sync::Arc;
+
     use app::*;
     use axum::{extract::Extension, routing::post, Router};
     use fileserv::file_and_error_handler;
     use leptos::*;
     use leptos_axum::{generate_route_list, LeptosRoutes};
-    use std::sync::Arc;
 
-    simple_logger::init_with_level(log::Level::Debug).expect("couldn't initialize logging");
+    simple_logger::init_with_level(log::Level::Debug)
+        .expect("couldn't initialize logging");
 
     // Setting get_configuration(None) means we'll be using cargo-leptos's env values
     // For deployment these variables are:
@@ -24,7 +26,11 @@ async fn main() {
     // build our application with a route
     let app = Router::new()
         .route("/api/*fn_name", post(leptos_axum::handle_server_fns))
-        .leptos_routes(leptos_options.clone(), routes, |cx| view! { cx, <App/> })
+        .leptos_routes(
+            leptos_options.clone(),
+            routes,
+            |cx| view! { cx, <App/> },
+        )
         .fallback(file_and_error_handler)
         .layer(Extension(Arc::new(leptos_options)));
 
