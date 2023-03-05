@@ -24,7 +24,7 @@ pub struct DbConfig {
 impl Default for DbConfig {
     fn default() -> Self {
         Self {
-            url: "sqlite://dist/default.sqlite3".to_string(),
+            url: "sqlite://target/default.sqlite3".to_string(),
             min_connections: Some(1),
             max_connections: 16,
             connect_timeout: 5,
@@ -44,7 +44,7 @@ pub enum Error {
 }
 
 /// Our apps database newtype
-#[derive(Debug, Deref)]
+#[derive(Clone, Debug, Deref)]
 pub struct Db {
     conn: DatabaseConnection,
 }
@@ -64,7 +64,9 @@ impl Db {
         }
         let conn = Database::connect(options).await?;
 
-        Ok(Self { conn })
+        Ok(Self {
+            conn,
+        })
     }
 
     pub async fn run_migrations(&self) -> std::result::Result<(), Error> {

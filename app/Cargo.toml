@@ -16,5 +16,10 @@ thiserror = "1.0.38"
 
 [features]
 default = ["hydrate"]
-hydrate = ["leptos/hydrate", "leptos_meta/hydrate"]
-ssr = ["leptos/ssr", "leptos_meta/ssr", "dep:leptos_axum" ]
+hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
+ssr = [
+  "leptos/ssr",
+  "leptos_meta/ssr",
+  "leptos_router/ssr",
+  "dep:leptos_axum",
+]

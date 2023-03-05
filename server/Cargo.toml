@@ -5,6 +5,8 @@ edition = "2021"
 
 [dependencies]
 app = { path = "../app", default-features = false, features = ["ssr"] }
+entity = { path = "../entity" }
+migration = { path = "../migration" }
 leptos = { workspace = true, features = ["serde", "ssr"] }
 leptos_meta = { workspace = true, features = ["ssr"] }
 leptos_router = { workspace = true, features = ["ssr"] }
@@ -20,7 +22,14 @@ simple_logger = "4"
 tokio = "1.25.0"
 tower = "0.4.13"
 tower-http = { version = "0.3.5", features = ["fs"] }
-wasm-bindgen = "0.2"
 thiserror = "1.0.38"
 tracing = { version = "0.1.37" }
 http = "0.2.9"
+serde = { version = "1.0.152", features = [
+  "derive",
+  "serde_derive",
+  "unstable",
+  "alloc",
+  "rc",
+] }
+figment = { version = "0.10.8", features = ["toml", "json", "env", "yaml"] }
