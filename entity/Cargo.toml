@@ -1,0 +1,23 @@
+[package]
+license = "AGPL-3.0-or-later"
+name = "entity"
+publish = false
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "entity"
+path = "src/lib.rs"
+
+[dependencies]
+async-std = { version = "1", features = ["attributes", "tokio1"] }
+
+[dependencies.sea-orm]
+version = "0.11.0"
+features = [
+  "runtime-tokio-rustls",
+  "sqlx-sqlite",
+  "with-time",
+  "with-json",
+  "with-uuid",
+]

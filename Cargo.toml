@@ -3,7 +3,7 @@ codegen-units = 1
 lto = true
 
 [workspace]
-members = ["app", "server", "wasm-lib"]
+members = ["app", "entity", "migration", "server", "wasm-lib"]
 
 [workspace.dependencies]
 leptos = "0.2.0"
