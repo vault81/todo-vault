@@ -18,7 +18,8 @@ pub fn App(cx: Scope) -> impl IntoView {
 
         <Router>
             <Routes>
-                <Route path="" view=|cx| view! { cx, <HomePage/> }/>
+                <Route path="/" view=|cx| view! { cx, <HomePage/> }/>
+                <Route path="/other" view=|cx| view! { cx, <OtherPage/> }/>
             </Routes>
         </Router>
     }
@@ -104,6 +105,26 @@ fn Table(cx: Scope) -> impl IntoView {
 }
 
 #[component]
+fn OtherPage(cx: Scope) -> impl IntoView {
+    view! { cx,
+        <div class="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
+            <Navbar/>
+            <div class="container flex overflow-y-auto flex-col items-center mx-auto">
+                <div id="root">
+                    <p>
+                        <div class="p-4 my-4 mx-4 bg-white rounded-lg border border-gray-200 shadow-md sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
+                            <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-200"> "Welcome to Leptos" </h2>
+                            <p class="mt-2 text-gray-600 dark:text-gray-400"> "Leptos is a simple todo app written in Rust and compiled to WebAssembly." </p>
+                        </div>
+                    </p>
+                </div>
+            </div>
+            <Footer/>
+        </div>
+    }
+}
+
+#[component]
 fn HomePage(cx: Scope) -> impl IntoView {
     view! { cx,
         <div class="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
@@ -128,16 +149,16 @@ fn Navbar(cx: Scope) -> impl IntoView {
         <nav class="py-2.5 px-2.5 bg-white rounded border-t border-gray-200 dark:bg-gray-800 dark:border-gray-600">
             <div class="container flex flex-wrap justify-between items-center mx-auto">
                 <a href="https://vault81.de/" class="flex items-center">
-                    <img src="logo.svg" class="mr-3 h-8 w-8 rounded bg-[#d19522] p-[0.0675rem]" alt="81"/>
+                    <img src="/logo.svg" class="mr-3 h-8 w-8 rounded bg-[#d19522] p-[0.0675rem]" alt="81"/>
                     <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">"TodoVault"</span>
                 </a>
                 <div class="" id="navbar-default">
                     <ul class="flex flex-row p-1 space-x-2 text-sm font-medium rounded-lg md:space-x-8">
                         <li>
-                            <a href="" class="block p-0 text-gray-700 rounded dark:text-gray-400 hover:text-blue-700 dark:hover:text-white">"Example1" </a>
+                            <A href="/" class="block p-0 text-gray-700 rounded dark:text-gray-400 hover:text-blue-700 dark:hover:text-white">"Home"</A>
                         </li>
                         <li>
-                            <a href="/counter" class="block p-0 text-gray-700 rounded dark:text-gray-400 hover:text-blue-700 dark:hover:text-white">"Example2"</a>
+                            <A href="/other" class="block p-0 text-gray-700 rounded dark:text-gray-400 hover:text-blue-700 dark:hover:text-white">"Other"</A>
                         </li>
                     </ul>
                 </div>
