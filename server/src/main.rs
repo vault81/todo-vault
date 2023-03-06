@@ -19,6 +19,11 @@ use leptos_axum::{
     handle_server_fns_with_context,
     LeptosRoutes,
 };
+use tower_http::{
+    compression::CompressionLayer,
+    trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
+};
+use tracing::Level;
 
 use crate::db::DbConfig;
 
@@ -28,7 +33,7 @@ async fn server_fn_handler(
     headers: HeaderMap,
     request: Request<Body>,
 ) -> impl IntoResponse {
-    log!("{:?}", path);
+    tracing::info!("serverfn: {:?}", path);
 
     handle_server_fns_with_context(
         path,
@@ -59,9 +64,7 @@ async fn leptos_routes_handler(
 
 #[tokio::main]
 async fn main() {
-    simple_logger::init_with_level(log::Level::Debug)
-        .expect("couldn't initialize logging");
-
+    tracing_subscriber::fmt().with_max_level(Level::INFO).init();
     // Setting get_configuration(None) means we'll be using cargo-leptos's env values
     // For deployment these variables are:
     // <https://github.com/leptos-rs/todo-vault#executing-a-server-on-a-remote-machine-without-the-toolchain>
@@ -85,11 +88,18 @@ async fn main() {
         )
         .fallback(file_and_error_handler)
         .layer(Extension(Arc::new(leptos_options)))
-        .layer(Extension(Arc::new(db)));
+        .layer(Extension(Arc::new(db)))
+        .layer(CompressionLayer::new())
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(DefaultMakeSpan::new().include_headers(true))
+                .on_request(DefaultOnRequest::new().level(Level::INFO))
+                .on_response(DefaultOnResponse::new().level(Level::INFO)),
+        );
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
-    log!("listening on http://{}", &addr);
+    tracing::info!("listening on http://{}", &addr);
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
