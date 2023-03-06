@@ -13,7 +13,7 @@ leptos_router = { workspace = true, features = ["ssr"] }
 leptos_dom = { workspace = true, features = ["ssr"] }
 leptos_axum.workspace = true
 
-axum = "0.6.4"
+axum = "0.6.10"
 derive_more = "0.99.17"
 console_error_panic_hook = "0.1"
 console_log = "0.2"
