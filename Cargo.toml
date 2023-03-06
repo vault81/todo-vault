@@ -18,7 +18,7 @@ members = ["app", "entity", "migration", "server", "wasm-lib"]
 leptos = "0.2.1"
 leptos_meta = "0.2.1"
 leptos_router = "0.2.1"
-leptos_dom = "0.2.0"
+leptos_dom = "0.2.1"
 leptos_axum = "0.2.0"
 
 [[workspace.metadata.leptos]]
