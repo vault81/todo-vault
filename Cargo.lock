@@ -76,6 +76,7 @@ dependencies = [
  "http",
  "lazy_static",
  "leptos",
+ "leptos_axum",
  "leptos_dom",
  "leptos_meta",
  "leptos_router",

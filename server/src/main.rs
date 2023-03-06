@@ -12,7 +12,6 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use db::Db;
 use fileserv::file_and_error_handler;
 use http::{header, HeaderMap, Request};
 use leptos::*;
@@ -28,10 +27,10 @@ use tower_http::{
 };
 use tracing::Level;
 
-use crate::db::DbConfig;
+use crate::db::{Db, DbConfig};
 
 async fn server_fn_handler(
-    Extension(db): Extension<Db>,
+    Extension(db): Extension<Arc<Db>>,
     path: Path<String>,
     headers: HeaderMap,
     request: Request<Body>,
@@ -65,6 +64,21 @@ async fn leptos_routes_handler(
     handler(request).await.into_response()
 }
 
+#[cfg(feature = "debug_assertions")]
+fn router_with_default_extensions() -> Router {
+    Router::new()
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(DefaultMakeSpan::new().include_headers(true))
+                .on_request(DefaultOnRequest::new().level(Level::INFO))
+                .on_response(DefaultOnResponse::new().level(Level::INFO)),
+        )
+        .layer(SetSensitiveRequestHeadersLayer::new(vec![
+            header::AUTHORIZATION,
+            header::COOKIE,
+        ]))
+}
+#[cfg(not(feature = "debug_assertions"))]
 fn router_with_default_extensions() -> Router {
     Router::new()
         .layer(CompressionLayer::new())

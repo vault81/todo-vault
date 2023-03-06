@@ -13,7 +13,7 @@ leptos = { workspace = true }
 leptos_dom.workspace = true
 leptos_meta.workspace = true
 leptos_router.workspace = true
-# leptos_axum = { workspace = true, optional = true }
+leptos_axum = { workspace = true, optional = true }
 thiserror = "1.0.39"
 serde = { version = "1.0.152", features = [
   "derive",
@@ -39,5 +39,6 @@ ssr = [
   "leptos/ssr",
   "leptos_meta/ssr",
   "leptos_router/ssr",
+  "dep:leptos_axum",
   "dep:broadcaster",
 ]

@@ -8,7 +8,7 @@ app = { path = "../app", default-features = false, features = ["ssr"] }
 entity = { path = "../entity" }
 migration = { path = "../migration" }
 leptos = { workspace = true, features = ["serde", "ssr"] }
-leptos_axum = { version = "0.2.1" }
+leptos_axum = { workspace = true }
 leptos_meta = { workspace = true, features = ["ssr"] }
 leptos_router = { workspace = true, features = ["ssr"] }
 
