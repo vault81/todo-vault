@@ -1,6 +1,15 @@
+[profile.dev.package."*"]
+opt-level = 3
+[profile.dev.package.app]
+opt-level = 0
+[profile.dev.package.server]
+opt-level = 0
+
 [profile.release]
 codegen-units = 1
 lto = true
+opt-level = 3
+strip = "debuginfo"
 
 [workspace]
 members = ["app", "entity", "migration", "server", "wasm-lib"]
