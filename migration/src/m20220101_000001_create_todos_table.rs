@@ -19,15 +19,14 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(Todo::Title).string().not_null())
                     .col(ColumnDef::new(Todo::Text).string().not_null())
-                    .col(ColumnDef::new(Todo::Done).boolean().not_null())
-                    .to_owned(),
+                    .col(ColumnDef::new(Todo::Done).boolean().not_null()).clone(),
             )
             .await
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(Todo::Table).to_owned())
+            .drop_table(Table::drop().table(Todo::Table).clone())
             .await
     }
 }

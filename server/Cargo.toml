@@ -8,17 +8,13 @@ app = { path = "../app", default-features = false, features = ["ssr"] }
 entity = { path = "../entity" }
 migration = { path = "../migration" }
 leptos = { workspace = true, features = ["serde", "ssr"] }
+leptos_axum = { version = "0.2.1" }
 leptos_meta = { workspace = true, features = ["ssr"] }
 leptos_router = { workspace = true, features = ["ssr"] }
-leptos_dom = { workspace = true, features = ["ssr"] }
-leptos_axum.workspace = true
 
 axum = "0.6.10"
 derive_more = "0.99.17"
 console_error_panic_hook = "0.1"
-console_log = "0.2"
-log = "0.4"
-simple_logger = "4"
 tokio = "1.26.0"
 tower = "0.4.13"
 tower-http = { version = "0.4.0", features = [
@@ -26,6 +22,7 @@ tower-http = { version = "0.4.0", features = [
   "cors",
   "decompression-full",
   "fs",
+  "sensitive-headers",
   "tokio",
   "trace",
   "tracing",

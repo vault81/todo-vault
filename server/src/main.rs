@@ -1,8 +1,10 @@
+#![warn(clippy::pedantic)]
+#![forbid(unsafe_code)]
 mod db;
 mod fileserv;
 use std::sync::Arc;
 
-use app::*;
+use app::{functions::register_server_functions, *};
 use axum::{
     body::Body,
     extract::{Extension, Path},
@@ -12,7 +14,7 @@ use axum::{
 };
 use db::Db;
 use fileserv::file_and_error_handler;
-use http::{HeaderMap, Request};
+use http::{header, HeaderMap, Request};
 use leptos::*;
 use leptos_axum::{
     generate_route_list,
@@ -21,6 +23,7 @@ use leptos_axum::{
 };
 use tower_http::{
     compression::CompressionLayer,
+    sensitive_headers::SetSensitiveRequestHeadersLayer,
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
 };
 use tracing::Level;
@@ -28,7 +31,7 @@ use tracing::Level;
 use crate::db::DbConfig;
 
 async fn server_fn_handler(
-    Extension(db): Extension<Arc<Db>>,
+    Extension(db): Extension<Db>,
     path: Path<String>,
     headers: HeaderMap,
     request: Request<Body>,
@@ -62,14 +65,28 @@ async fn leptos_routes_handler(
     handler(request).await.into_response()
 }
 
+fn router_with_default_extensions() -> Router {
+    Router::new()
+        .layer(CompressionLayer::new())
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(DefaultMakeSpan::new().include_headers(true))
+                .on_request(DefaultOnRequest::new().level(Level::INFO))
+                .on_response(DefaultOnResponse::new().level(Level::INFO)),
+        )
+        .layer(SetSensitiveRequestHeadersLayer::new(vec![
+            header::AUTHORIZATION,
+            header::COOKIE,
+        ]))
+}
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt().with_max_level(Level::INFO).init();
+
+    register_server_functions().expect("Failed to register server functions");
+
     // Setting get_configuration(None) means we'll be using cargo-leptos's env values
-    // For deployment these variables are:
-    // <https://github.com/leptos-rs/todo-vault#executing-a-server-on-a-remote-machine-without-the-toolchain>
-    // Alternately a file can be specified such as Some("Cargo.toml")
-    // The file would need to be included with the executable when moved to deployment
     let conf = get_configuration(None).await.unwrap();
     let leptos_options = conf.leptos_options;
     let addr = leptos_options.site_addr;
@@ -78,7 +95,7 @@ async fn main() {
     db.run_migrations().await.unwrap();
 
     // build our application with a route
-    let app = Router::new()
+    let app = router_with_default_extensions()
         .route("/api/*fn_name", post(server_fn_handler))
         .route("/special/:id", get(leptos_routes_handler))
         .leptos_routes(
@@ -88,14 +105,7 @@ async fn main() {
         )
         .fallback(file_and_error_handler)
         .layer(Extension(Arc::new(leptos_options)))
-        .layer(Extension(Arc::new(db)))
-        .layer(CompressionLayer::new())
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(DefaultMakeSpan::new().include_headers(true))
-                .on_request(DefaultOnRequest::new().level(Level::INFO))
-                .on_response(DefaultOnResponse::new().level(Level::INFO)),
-        );
+        .layer(Extension(Arc::new(db)));
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`

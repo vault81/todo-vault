@@ -1,8 +1,18 @@
+#![warn(clippy::pedantic)]
+#![forbid(unsafe_code)]
+mod counters;
 pub mod error_template;
+
+pub mod functions;
 
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
+
+use crate::{
+    counters::{Counters, CountersProps},
+    error_template::*,
+};
 
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
@@ -17,10 +27,13 @@ pub fn App(cx: Scope) -> impl IntoView {
         <Title text="Welcome to Leptos"/>
 
         <Router>
+            <ErrorBoundary fallback=|cx, errors| view!{cx, <ErrorTemplate errors=errors/>}>
             <Routes>
                 <Route path="/" view=|cx| view! { cx, <HomePage/> }/>
                 <Route path="/other" view=|cx| view! { cx, <OtherPage/> }/>
+                <Route path="/counter" view=|cx| view! { cx, <CounterPage /> }/>
             </Routes>
+            </ErrorBoundary>
         </Router>
     }
 }
@@ -102,6 +115,25 @@ fn Table(cx: Scope) -> impl IntoView {
             </table>
         </div>
     )
+}
+
+#[component]
+fn CounterPage(cx: Scope) -> impl IntoView {
+    view! { cx,
+        <div class="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
+            <Navbar/>
+            <div class="container flex overflow-y-auto flex-col items-center mx-auto">
+                <div id="root">
+                    <p>
+                        <div class="p-4 my-4 mx-4 bg-white rounded-lg border border-gray-200 shadow-md sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
+                            <Counters/>
+                        </div>
+                    </p>
+                </div>
+            </div>
+            <Footer/>
+        </div>
+    }
 }
 
 #[component]

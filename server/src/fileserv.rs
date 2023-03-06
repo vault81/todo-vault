@@ -26,7 +26,7 @@ pub async fn file_and_error_handler(
         let mut errors = Errors::default();
         errors.insert_with_default_key(AppError::NotFound);
         let handler = leptos_axum::render_app_to_stream(
-            options.to_owned(),
+            options.clone(),
             move |cx| view! {cx, <ErrorTemplate outside_errors=errors.clone()/>},
         );
         handler(req).await.into_response()
