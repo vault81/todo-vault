@@ -19,7 +19,7 @@ leptos = "0.2.1"
 leptos_meta = "0.2.1"
 leptos_router = "0.2.1"
 leptos_dom = "0.2.1"
-leptos_axum = "0.2.0"
+leptos_axum = "0.2.1"
 
 [[workspace.metadata.leptos]]
 # The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name
