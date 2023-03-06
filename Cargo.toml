@@ -15,7 +15,7 @@ strip = "debuginfo"
 members = ["app", "entity", "migration", "server", "wasm-lib"]
 
 [workspace.dependencies]
-leptos = "0.2.0"
+leptos = "0.2.1"
 leptos_meta = "0.2.0"
 leptos_router = "0.2.0"
 leptos_dom = "0.2.0"
