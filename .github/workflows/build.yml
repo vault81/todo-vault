@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2023-01-06
+          components: rustfmt, clippy
+      - name: Setup mold, sqlite3
+        run: sudo apt-get install -y mold sqlite3
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            dist/
+            target/
+          key: ${{ runner.os }}-cargo-pkg-${{ hashFiles('**/Cargo.lock') }}
+      - name: cargo install cargo-leptos
+        continue-on-error: true
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: cargo-leptos@0.1.8
+      - name: cargo leptos test
+        uses: actions-rs/cargo@v1
+        with:
+          command: leptos
+          args: test
+  check:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2023-01-06
+          components: rustfmt, clippy
+      - name: Setup mold, sqlite3
+        run: sudo apt-get install -y mold sqlite3
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            dist/
+            target/
+          key: ${{ runner.os }}-cargo-pkg-${{ hashFiles('**/Cargo.lock') }}
+      - name: cargo check
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
