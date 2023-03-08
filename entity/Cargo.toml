@@ -10,7 +10,19 @@ name = "entity"
 path = "src/lib.rs"
 
 [dependencies]
+migration = { path = "../migration" }
+
 async-std = { version = "1", features = ["attributes", "tokio1"] }
+derive_more = "0.99.17"
+figment = { version = "0.10.8", features = ["toml", "json", "env", "yaml"] }
+serde = { version = "1.0.152", features = [
+  "derive",
+  "serde_derive",
+  "alloc",
+  "rc",
+] }
+thiserror = "1.0.39"
+tracing = { version = "0.1.37" }
 
 [dependencies.sea-orm]
 version = "0.11.0"

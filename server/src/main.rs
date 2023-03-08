@@ -1,6 +1,5 @@
 #![warn(clippy::pedantic)]
 #![forbid(unsafe_code)]
-mod db;
 mod fileserv;
 use std::sync::Arc;
 
@@ -12,6 +11,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use entity::db::{Db, DbConfig};
 use fileserv::file_and_error_handler;
 use http::{header, HeaderMap, Request};
 use leptos::*;
@@ -26,8 +26,6 @@ use tower_http::{
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
 };
 use tracing::Level;
-
-use crate::db::{Db, DbConfig};
 
 async fn server_fn_handler(
     Extension(db): Extension<Arc<Db>>,

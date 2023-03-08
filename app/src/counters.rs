@@ -27,64 +27,12 @@ pub fn Counters(cx: Scope) -> impl IntoView {
         cx,
         <div class="format dark:format-invert">
             <h1>"Server-Side Counters"</h1>
-            <p> "Each of these counters stores its data in the same variable on the server."</p>
+            <p> "This counter stores its data in a variable on the server."</p>
             <p>"The value is shared across connections. Try opening this is another browser tab to see what I mean."</p>
             <div>
-                <h2>"Counter 1"</h2>
-                <Counter/>
-                <h2>"Counter 2"</h2>
+                <h2>"Form Counter"</h2>
                 <FormCounter/>
             </div>
-        </div>
-    }
-}
-
-#[component]
-pub fn Counter(cx: Scope) -> impl IntoView {
-    let dec = create_action(cx, |_| adjust_server_count(-1, "decing".into()));
-    let inc = create_action(cx, |_| adjust_server_count(1, "incing".into()));
-    let clear = create_action(cx, |_| clear_server_count());
-
-    let counter = create_resource(
-        cx,
-        move || {
-            (
-                dec.version().get(),
-                inc.version().get(),
-                clear.version().get(),
-            )
-        },
-        |_| async move { get_server_count().await },
-    );
-
-    let value = move || {
-        counter
-            .read(cx)
-            .and_then(std::result::Result::ok)
-            .unwrap_or(0)
-    };
-
-    let error_msg = move || {
-        counter.read(cx).and_then(|res| match res {
-            Ok(_) => None,
-            Err(e) => Some(e),
-        })
-    };
-
-    view! {
-        cx,
-        <div>
-            <h3>"Simple Counter"</h3>
-            <p>"This counter sets the value on the server and automatically reloads the new value."</p>
-            <div class="inline-grid grid-cols-5 justify-items-center">
-                <Button on:click=move |_| clear.dispatch(())>"Clear"</Button>
-                <Button on:click=move |_| dec.dispatch(())>"-1"</Button>
-                <span class="py-2.5 px-5 mr-2 mb-2 w-32">
-                    "Value: " {move || value().to_string()} "!"
-                </span>
-                <Button on:click=move |_| inc.dispatch(())>"+1"</Button>
-            </div>
-            {move || error_msg().map(|msg| view! { cx, <p>"Error: " {msg.to_string()}</p>})}
         </div>
     }
 }
@@ -114,7 +62,9 @@ pub fn FormCounter(cx: Scope) -> impl IntoView {
         cx,
         <div>
             <h3>"Form Counter"</h3>
-            <p>"This counter uses forms to set the value on the server. When progressively enhanced, it should behave identically to the “Simple Counter.”"</p>
+            <p>"This counter uses forms to set the value on the server. When progressively enhanced, it should behave like any JS app coutner"</p>
+            <p>"When the site is loaded without client-side JS/wasm, it works just as well just slower by using form submits."</p>
+            <p>"This allows us to write websites that \"just work\" on any device, without much coding effort."</p>
             <div class="inline-grid grid-cols-5 justify-items-center">
                 // calling a server function is the same as POSTing to its API URL
                 // so we can just do that with a form and button
@@ -132,9 +82,11 @@ pub fn FormCounter(cx: Scope) -> impl IntoView {
                         "-1"
                     </Button>
                 </ActionForm>
-                <span class="py-2.5 px-5 mr-2 mb-2 w-32">
-                    "Value: " {move || value().to_string()} "!"
-                </span>
+                <Suspense fallback=move || view!{cx, <div>"Loading..."</div>}>
+                    <span class="py-2.5 px-5 mr-2 mb-2 w-32">
+                        "Value: " {move || value().to_string()} "!"
+                    </span>
+                </Suspense>
                 <ActionForm action=adjust>
                     <input type="hidden" name="delta" value="1"/>
                     <input type="hidden" name="msg" value="form value up"/>

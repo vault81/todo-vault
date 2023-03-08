@@ -1,18 +1,17 @@
-[profile.dev.package."*"]
-opt-level = 3
-[profile.dev.package.app]
-opt-level = 1
-[profile.dev.package.server]
-opt-level = 1
 [profile.dev]
 opt-level = 1
 lto = "thin"
 
+[profile.dev.package."*"]
+opt-level = 3
+[profile.dev.package.app]
+opt-level = 0
+
 [profile.release]
 codegen-units = 1
-lto = "full"
-opt-level = 3
+lto = "fat"
 strip = "debuginfo"
+opt-level = 3
 
 [workspace]
 members = ["app", "entity", "migration", "server", "wasm-lib"]

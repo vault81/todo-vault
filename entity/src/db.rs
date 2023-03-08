@@ -1,8 +1,8 @@
 use std::time::Duration;
 
 use derive_more::Deref;
-use entity::sea_orm::{ConnectOptions, Database, DatabaseConnection, DbErr};
 use migration::MigratorTrait;
+use sea_orm::{ConnectOptions, Database, DatabaseConnection, DbErr};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tracing::info;
