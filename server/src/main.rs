@@ -21,7 +21,6 @@ use leptos_axum::{
     LeptosRoutes,
 };
 use tower_http::{
-    compression::CompressionLayer,
     sensitive_headers::SetSensitiveRequestHeadersLayer,
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
 };
@@ -34,8 +33,6 @@ async fn server_fn_handler(
     request: Request<Body>,
 ) -> impl IntoResponse {
     tracing::info!("serverfn: {:?}", path);
-    tracing::info!("db: {:?}", db);
-
     handle_server_fns_with_context(
         path,
         headers,
@@ -83,7 +80,6 @@ async fn main() {
         .fallback(file_and_error_handler)
         .layer(Extension(Arc::new(leptos_options)))
         .layer(Extension(Arc::new(db)))
-        .layer(CompressionLayer::new())
         .layer(SetSensitiveRequestHeadersLayer::new(vec![
             header::AUTHORIZATION,
             header::COOKIE,

@@ -1,5 +1,8 @@
 #[cfg(feature = "ssr")]
-use std::sync::atomic::{AtomicI32, Ordering};
+use std::sync::{
+    atomic::{AtomicI32, Ordering},
+    Arc,
+};
 
 #[cfg(feature = "ssr")]
 use broadcaster::BroadcastChannel;
@@ -27,14 +30,24 @@ pub async fn get_server_count() -> Result<i32, ServerFnError> {
     Ok(COUNT.load(Ordering::Relaxed))
 }
 
+#[cfg(feature = "ssr")]
+pub fn db(cx: Scope) -> Result<Arc<entity::db::Db>, ServerFnError> {
+    Ok(use_context::<Arc<entity::db::Db>>(cx)
+        .ok_or("Pool missing.")
+        .map_err(|e| ServerFnError::ServerError(e.to_string()))?)
+}
+
 #[server(AdjustServerCount, "/api")]
 pub async fn adjust_server_count(
+    cx: Scope,
     delta: i32,
     msg: String,
 ) -> Result<i32, ServerFnError> {
     tracing::info!("adjust server count");
     tracing::info!("delta: {}", delta);
     tracing::info!("msg: {}", msg);
+    let db = db(cx)?;
+    tracing::info!("db: {:?}", db);
     let new = COUNT.load(Ordering::Relaxed) + delta;
     COUNT.store(new, Ordering::Relaxed);
     _ = COUNT_CHANNEL.send(&new).await;
