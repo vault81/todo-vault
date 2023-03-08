@@ -20,6 +20,13 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Todos::Title).string().not_null())
                     .col(ColumnDef::new(Todos::Text).string())
                     .col(ColumnDef::new(Todos::Done).boolean().not_null())
+                    .col(ColumnDef::new(Todos::DueDate).date())
+                    .col(
+                        ColumnDef::new(Todos::CreatedAt).date_time().not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Todos::UpdatedAt).date_time().not_null(),
+                    )
                     .clone(),
             )
             .await
@@ -40,4 +47,7 @@ enum Todos {
     Title,
     Text,
     Done,
+    DueDate,
+    CreatedAt,
+    UpdatedAt,
 }

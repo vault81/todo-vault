@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
-#![warn(clippy::pedantic)]
 #![forbid(unsafe_code)]
+#![feature(once_cell)]
 pub mod error_template;
 
 mod components;
@@ -28,9 +28,10 @@ pub fn App(cx: Scope) -> impl IntoView {
         <Router>
             <ErrorBoundary fallback=|cx, errors| view!{cx, <ErrorTemplate errors=errors/>}>
             <Routes>
-                <Route path="" view=|cx| view! { cx, <IndexPage/> }/>
-                <Route path="/todo" view=|cx| view! { cx, <TodosPage/> }/>
-                <Route path="/counter" ssr=SsrMode::Async view=|cx| view! { cx, <CounterPage /> } />
+                <Route path="/" view=move |cx| view! { cx, <IndexPage/> }/>
+                <Route path="/todo" ssr=SsrMode::Async view=move |cx| view! { cx, <TodosPage /> }/>
+                <Route path="/counter" ssr=SsrMode::Async view=move |cx| view! { cx, <CounterPage /> } />
+                <Route path="/about" view=move |cx| view! { cx, <AboutPage /> } />
             </Routes>
             </ErrorBoundary>
         </Router>

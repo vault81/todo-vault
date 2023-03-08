@@ -1,4 +1,3 @@
-#![warn(clippy::pedantic)]
 #![forbid(unsafe_code)]
 mod fileserv;
 use std::sync::Arc;
@@ -22,7 +21,14 @@ use leptos_axum::{
 };
 use tower_http::{
     sensitive_headers::SetSensitiveRequestHeadersLayer,
-    trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
+    trace::{
+        DefaultMakeSpan,
+        DefaultOnBodyChunk,
+        DefaultOnEos,
+        DefaultOnRequest,
+        DefaultOnResponse,
+        TraceLayer,
+    },
 };
 use tracing::Level;
 
@@ -88,11 +94,11 @@ async fn main() {
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::new().include_headers(true))
                 .on_request(DefaultOnRequest::new().level(Level::INFO))
-                .on_response(DefaultOnResponse::new().level(Level::INFO)),
+                .on_response(DefaultOnResponse::new().level(Level::INFO))
+                .on_eos(DefaultOnEos::new().level(Level::INFO))
+                .on_body_chunk(DefaultOnBodyChunk::new()),
         );
 
-    // run our app with hyper
-    // `axum::Server` is a re-export of `hyper::Server`
     tracing::info!("listening on http://{}", &addr);
     axum::Server::bind(&addr)
         .serve(app.into_make_service())

@@ -1,4 +1,3 @@
-#![warn(clippy::pedantic)]
 #![forbid(unsafe_code)]
 pub use sea_orm_migration::prelude::*;
 

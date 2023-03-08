@@ -6,13 +6,30 @@ use std::sync::{
 
 #[cfg(feature = "ssr")]
 use broadcaster::BroadcastChannel;
+use entity::{
+    chrono::NaiveDate,
+    sea_orm::{
+        entity::ActiveModelTrait,
+        query::QueryOrder,
+        EntityTrait,
+        ModelTrait,
+    },
+    todos,
+    uuid,
+};
 use leptos::*;
+use thiserror::Error;
 
 #[cfg(feature = "ssr")]
 pub fn register_server_functions() -> Result<(), ServerFnError> {
-    _ = GetServerCount::register()?;
-    _ = AdjustServerCount::register()?;
-    _ = ClearServerCount::register()?;
+    GetServerCount::register()?;
+    AdjustServerCount::register()?;
+    ClearServerCount::register()?;
+    AddTodo::register()?;
+    ListTodos::register()?;
+    TrashTodo::register()?;
+    ChangeTodo::register()?;
+    ToggleTodo::register()?;
     Ok(())
 }
 
@@ -32,9 +49,9 @@ pub async fn get_server_count() -> Result<i32, ServerFnError> {
 
 #[cfg(feature = "ssr")]
 pub fn db(cx: Scope) -> Result<Arc<entity::db::Db>, ServerFnError> {
-    Ok(use_context::<Arc<entity::db::Db>>(cx)
+    use_context::<Arc<entity::db::Db>>(cx)
         .ok_or("Pool missing.")
-        .map_err(|e| ServerFnError::ServerError(e.to_string()))?)
+        .map_err(|e| ServerFnError::ServerError(e.to_string()))
 }
 
 #[server(AdjustServerCount, "/api")]
@@ -46,7 +63,6 @@ pub async fn adjust_server_count(
     tracing::debug!("adjust server count");
     tracing::debug!("delta: {}", delta);
     tracing::debug!("msg: {}", msg);
-    let db = db(cx)?;
     let new = COUNT.load(Ordering::Relaxed) + delta;
     COUNT.store(new, Ordering::Relaxed);
     _ = COUNT_CHANNEL.send(&new).await;
@@ -60,4 +76,118 @@ pub async fn clear_server_count() -> Result<i32, ServerFnError> {
     COUNT.store(0, Ordering::Relaxed);
     _ = COUNT_CHANNEL.send(&0).await;
     Ok(0)
+}
+
+#[server(ListTodos, "/api")]
+pub async fn list_todos(cx: Scope) -> Result<Vec<todos::Model>, ServerFnError> {
+    let db = db(cx)?;
+
+    let todos = todos::Entity::find()
+        .order_by_asc(todos::Column::CreatedAt)
+        .all(db.conn())
+        .await
+        .map_err(|err| {
+            tracing::error!("Failed to list todos: {}", err);
+            ServerFnError::ServerError("No todos found".to_string())
+        })?;
+
+    Ok(todos)
+}
+
+#[server(AddTodo, "/api")]
+pub async fn add_todo(
+    cx: Scope,
+    title: String,
+    text: Option<String>,
+    due_date: Option<String>,
+) -> Result<(), ServerFnError> {
+    let db = db(cx)?;
+
+    let due_date = due_date
+        .and_then(|str| if str.is_empty() { None } else { Some(str) })
+        .map(|string| {
+            let naive_date = NaiveDate::parse_from_str(&string, "%Y-%m-%d")
+                .map_err(|op| ServerFnError::ServerError(format!("{}", op)))?;
+            Ok(naive_date)
+        })
+        .transpose()?;
+
+    todos::ActiveModel::new(title, text, due_date)
+        .insert(db.conn())
+        .await
+        .map_err(|e| {
+            let str = format!("{e}");
+            ServerFnError::ServerError(str)
+        })?;
+
+    Ok(())
+}
+
+#[server(TrashTodo, "/api")]
+pub async fn trash_todo(
+    cx: Scope,
+    id: uuid::Uuid,
+) -> Result<(), ServerFnError> {
+    let db = db(cx)?;
+
+    let todo = todos::Entity::find_by_id(id)
+        .one(db.conn())
+        .await
+        .map_err(|_| ServerFnError::ServerError("No todo found".to_string()))?
+        .expect("should be unreachable #160");
+
+    todo.delete(db.conn()).await.map_err(|_| {
+        ServerFnError::ServerError("No todo deleted".to_string())
+    })?;
+    Ok(())
+}
+
+#[server(ChangeTodo, "/api")]
+pub async fn change_todo(
+    cx: Scope,
+    id: uuid::Uuid,
+    title: String,
+    text: Option<String>,
+) -> Result<(), ServerFnError> {
+    let db = db(cx)?;
+    // let uuid = entity::uuid::Uuid::parse_str(&id)
+    //     .map_err(|_| ServerFnError::ServerError("Invalid UUID".to_string()))?;
+
+    let mut updated: todos::ActiveModel = todos::Entity::find_by_id(id)
+        .one(db.conn())
+        .await
+        .map_err(|_| ServerFnError::ServerError("No todo found".to_string()))?
+        .expect("should be unreachable #183")
+        .into();
+
+    updated.title = entity::sea_orm::Set(title);
+    updated.text = entity::sea_orm::Set(text);
+
+    updated.update(db.conn()).await.map_err(|_| {
+        ServerFnError::ServerError("No todo updated".to_string())
+    })?;
+
+    Ok(())
+}
+
+#[server(ToggleTodo, "/api")]
+pub async fn toggle_todo(cx: Scope, id: String) -> Result<(), ServerFnError> {
+    let db = db(cx)?;
+    let uuid = entity::uuid::Uuid::parse_str(&id)
+        .map_err(|_| ServerFnError::ServerError("Invalid UUID".to_string()))?;
+
+    let mut updated: todos::ActiveModel = todos::Entity::find_by_id(uuid)
+        .one(db.conn())
+        .await
+        .map_err(|_| ServerFnError::ServerError("No todo found".to_string()))?
+        .unwrap()
+        .into();
+
+    updated.done = entity::sea_orm::Set(!updated.done.unwrap());
+
+    updated.update(db.conn()).await.map_err(|_| {
+        ServerFnError::ServerError("No todo updated".to_string())
+    })?;
+
+    Ok(())
 }

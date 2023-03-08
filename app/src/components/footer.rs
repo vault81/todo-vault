@@ -3,7 +3,7 @@ use leptos::*;
 #[component]
 pub fn Footer(cx: Scope) -> impl IntoView {
     view!(cx,
-        <footer class="sticky left-0 z-20 p-4 w-full bg-white border-t border-gray-200 shadow md:p-6 dark:bg-gray-800 dark:border-gray-600 top-[100vh]">
+        <footer class="sticky left-0 z-20 p-4 w-full bg-white border-t border-gray-200 shadow dark:bg-gray-800 dark:border-gray-600 top-[100vh]">
             <div class="container flex justify-between items-center mx-auto">
                 <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">
                     "🄯 2023 "

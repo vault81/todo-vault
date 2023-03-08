@@ -1,4 +1,3 @@
-#![warn(clippy::pedantic)]
 #![forbid(unsafe_code)]
 use app::*;
 use leptos::*;
@@ -10,6 +9,7 @@ pub fn hydrate() {
 
     // Add this line:
     tracing_wasm::set_as_global_default();
+    tracing::info!("Hello, world!");
 
     leptos::mount_to_body(move |cx| {
         view! { cx, <App/> }

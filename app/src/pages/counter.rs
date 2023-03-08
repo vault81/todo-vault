@@ -53,13 +53,15 @@ pub fn FormCounter(cx: Scope) -> impl IntoView {
                         "-1"
                     </Button>
                 </ActionForm>
-                <Transition fallback=move || view!{cx, <span class="py-2.5 px-5 mr-2 mb-2 w-32"> "Value: "</span>}>
-                    <span class="py-2.5 px-5 mr-2 mb-2 w-32">
-                        "Value: " {
-                            move || counter.read(cx).and_then(std::result::Result::ok).unwrap_or(0).to_string()
-                        } "!"
-                    </span>
-                </Transition>
+                <>
+                    <Transition fallback=move || view!{cx, <span class="py-2.5 px-5 mr-2 mb-2 w-32 bg-red-700">"Loading ..."</span>}>
+                        <span class="py-2.5 px-5 mr-2 mb-2 w-32">
+                            "Value: " {
+                                move || counter.read(cx).and_then(std::result::Result::ok).unwrap_or(0).to_string()
+                            } "!"
+                        </span>
+                    </Transition>
+                </>
                 <ActionForm action=adjust>
                     <input type="hidden" name="delta" value="1"/>
                     <input type="hidden" name="msg" value="form value up"/>
