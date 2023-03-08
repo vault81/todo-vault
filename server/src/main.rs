@@ -34,6 +34,7 @@ async fn server_fn_handler(
     request: Request<Body>,
 ) -> impl IntoResponse {
     tracing::info!("serverfn: {:?}", path);
+    tracing::info!("db: {:?}", db);
 
     handle_server_fns_with_context(
         path,
@@ -48,7 +49,6 @@ async fn server_fn_handler(
 
 async fn leptos_routes_handler(
     Extension(db): Extension<Arc<Db>>,
-    _path: Path<String>,
     Extension(options): Extension<Arc<LeptosOptions>>,
     request: Request<Body>,
 ) -> Response {
@@ -60,36 +60,6 @@ async fn leptos_routes_handler(
         |cx| view! { cx, <App/> },
     );
     handler(request).await.into_response()
-}
-
-#[cfg(feature = "debug_assertions")]
-fn router_with_default_extensions() -> Router {
-    Router::new()
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(DefaultMakeSpan::new().include_headers(true))
-                .on_request(DefaultOnRequest::new().level(Level::INFO))
-                .on_response(DefaultOnResponse::new().level(Level::INFO)),
-        )
-        .layer(SetSensitiveRequestHeadersLayer::new(vec![
-            header::AUTHORIZATION,
-            header::COOKIE,
-        ]))
-}
-#[cfg(not(feature = "debug_assertions"))]
-fn router_with_default_extensions() -> Router {
-    Router::new()
-        .layer(CompressionLayer::new())
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(DefaultMakeSpan::new().include_headers(true))
-                .on_request(DefaultOnRequest::new().level(Level::INFO))
-                .on_response(DefaultOnResponse::new().level(Level::INFO)),
-        )
-        .layer(SetSensitiveRequestHeadersLayer::new(vec![
-            header::AUTHORIZATION,
-            header::COOKIE,
-        ]))
 }
 
 #[tokio::main]
@@ -107,17 +77,23 @@ async fn main() {
     db.run_migrations().await.unwrap();
 
     // build our application with a route
-    let app = router_with_default_extensions()
+    let app = Router::new()
         .route("/api/*fn_name", post(server_fn_handler))
-        .route("/special/:id", get(leptos_routes_handler))
-        .leptos_routes(
-            leptos_options.clone(),
-            routes,
-            |cx| view! { cx, <App/> },
-        )
+        .leptos_routes_with_handler(routes, get(leptos_routes_handler))
         .fallback(file_and_error_handler)
         .layer(Extension(Arc::new(leptos_options)))
-        .layer(Extension(Arc::new(db)));
+        .layer(Extension(Arc::new(db)))
+        .layer(CompressionLayer::new())
+        .layer(SetSensitiveRequestHeadersLayer::new(vec![
+            header::AUTHORIZATION,
+            header::COOKIE,
+        ]))
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(DefaultMakeSpan::new().include_headers(true))
+                .on_request(DefaultOnRequest::new().level(Level::INFO))
+                .on_response(DefaultOnResponse::new().level(Level::INFO)),
+        );
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`

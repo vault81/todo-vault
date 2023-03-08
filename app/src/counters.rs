@@ -37,9 +37,6 @@ pub fn Counters(cx: Scope) -> impl IntoView {
     }
 }
 
-// This is the <Form/> counter
-// It uses the same invalidation pattern as the plain counter,
-// but uses HTML forms to submit the actions
 #[component]
 pub fn FormCounter(cx: Scope) -> impl IntoView {
     let adjust = create_server_action::<AdjustServerCount>(cx);
@@ -51,30 +48,22 @@ pub fn FormCounter(cx: Scope) -> impl IntoView {
         |_| async { get_server_count().await },
     );
 
-    let value = move || {
-        counter
-            .read(cx)
-            .and_then(std::result::Result::ok)
-            .unwrap_or(0)
-    };
-
     view! {
         cx,
         <div>
             <h3>"Form Counter"</h3>
-            <p>"This counter uses forms to set the value on the server. When progressively enhanced, it should behave like any JS app coutner"</p>
-            <p>"When the site is loaded without client-side JS/wasm, it works just as well just slower by using form submits."</p>
-            <p>"This allows us to write websites that \"just work\" on any device, without much coding effort."</p>
+            <p>
+                "This counter uses forms to set the value on the server. " <br/>
+                "When progressively enhanced, it should behave like any JS app coutner" <br/>
+                "When the site is loaded without client-side JS/wasm, it works just as well just slower by using form submits." <br/>
+                "This allows us to write websites that \"just work\" on any device, without much coding effort."
+            </p>
             <div class="inline-grid grid-cols-5 justify-items-center">
-                // calling a server function is the same as POSTing to its API URL
-                // so we can just do that with a form and button
                 <ActionForm action=clear>
                     <Button b_type="submit">
                         "Clear"
                     </Button>
                 </ActionForm>
-                // We can submit named arguments to the server functions
-                // by including them as input values with the same name
                 <ActionForm action=adjust>
                     <input type="hidden" name="delta" value="-1"/>
                     <input type="hidden" name="msg" value="form value down"/>
@@ -82,11 +71,13 @@ pub fn FormCounter(cx: Scope) -> impl IntoView {
                         "-1"
                     </Button>
                 </ActionForm>
-                <Suspense fallback=move || view!{cx, <div>"Loading..."</div>}>
+                <Transition fallback=move || view!{cx, <span class="py-2.5 px-5 mr-2 mb-2 w-32"> "Value: "</span>}>
                     <span class="py-2.5 px-5 mr-2 mb-2 w-32">
-                        "Value: " {move || value().to_string()} "!"
+                        "Value: " {
+                            move || counter.read(cx).and_then(std::result::Result::ok).unwrap_or(0).to_string()
+                        } "!"
                     </span>
-                </Suspense>
+                </Transition>
                 <ActionForm action=adjust>
                     <input type="hidden" name="delta" value="1"/>
                     <input type="hidden" name="msg" value="form value up"/>

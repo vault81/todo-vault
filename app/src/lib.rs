@@ -29,9 +29,9 @@ pub fn App(cx: Scope) -> impl IntoView {
         <Router>
             <ErrorBoundary fallback=|cx, errors| view!{cx, <ErrorTemplate errors=errors/>}>
             <Routes>
-                <Route path="/" view=|cx| view! { cx, <HomePage/> }/>
-                <Route path="/other" view=|cx| view! { cx, <OtherPage/> }/>
-                <Route path="/counter" view=|cx| view! { cx, <CounterPage /> } />
+                <Route path="" view=|cx| view! { cx, <HomePage/> }/>
+                <Route path="other" view=|cx| view! { cx, <OtherPage/> }/>
+                <Route path="counter" ssr=SsrMode::Async view=|cx| view! { cx, <CounterPage /> } />
             </Routes>
             </ErrorBoundary>
         </Router>
