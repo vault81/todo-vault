@@ -19,7 +19,8 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(Todo::Title).string().not_null())
                     .col(ColumnDef::new(Todo::Text).string().not_null())
-                    .col(ColumnDef::new(Todo::Done).boolean().not_null()).clone(),
+                    .col(ColumnDef::new(Todo::Done).boolean().not_null())
+                    .clone(),
             )
             .await
     }

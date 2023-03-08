@@ -33,6 +33,8 @@ pub async fn adjust_server_count(
     msg: String,
 ) -> Result<i32, ServerFnError> {
     tracing::info!("adjust server count");
+    tracing::info!("delta: {}", delta);
+    tracing::info!("msg: {}", msg);
     let new = COUNT.load(Ordering::Relaxed) + delta;
     COUNT.store(new, Ordering::Relaxed);
     _ = COUNT_CHANNEL.send(&new).await;

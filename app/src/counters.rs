@@ -9,14 +9,12 @@ fn Button(
     cx: Scope,
     children: Children,
     #[prop(optional, into)] b_type: String,
-    #[prop(optional, into)] value: String,
 ) -> impl IntoView {
     view! {
         cx,
         <button
             type={b_type}
             class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-600 hover:text-blue-700 hover:bg-gray-100 focus:z-10 focus:ring-4 focus:ring-gray-200 focus:outline-none dark:focus:ring-gray-700 dark:hover:text-white dark:hover:bg-gray-700"
-            value={value}
         >
             {children(cx)}
         </button>
@@ -47,8 +45,7 @@ pub fn Counter(cx: Scope) -> impl IntoView {
     let inc = create_action(cx, |_| adjust_server_count(1, "incing".into()));
     let clear = create_action(cx, |_| clear_server_count());
 
-    tracing::info!("Counter created");
-    let counter = create_local_resource(
+    let counter = create_resource(
         cx,
         move || {
             (
@@ -60,11 +57,11 @@ pub fn Counter(cx: Scope) -> impl IntoView {
         |_| async move { get_server_count().await },
     );
 
-    tracing::info!("42 created");
     let value = move || {
         counter
             .read(cx)
-            .map_or(0, |count: Result<i32, ServerFnError>| count.unwrap_or(0))
+            .and_then(std::result::Result::ok)
+            .unwrap_or(0)
     };
 
     let error_msg = move || {
@@ -80,10 +77,12 @@ pub fn Counter(cx: Scope) -> impl IntoView {
             <h3>"Simple Counter"</h3>
             <p>"This counter sets the value on the server and automatically reloads the new value."</p>
             <div class="inline-grid grid-cols-5 justify-items-center">
-                <Button on:click=move |_| clear.dispatch(()) value="Clear">"Clear"</Button>
-                <Button on:click=move |_| dec.dispatch(()) value="-1">"-1"</Button>
-                <span class="py-2.5 px-5 mr-2 mb-2 w-32">"Value: " {move || value().to_string()} "!"</span>
-                <Button on:click=move |_| inc.dispatch(()) value="+1">"+1"</Button>
+                <Button on:click=move |_| clear.dispatch(())>"Clear"</Button>
+                <Button on:click=move |_| dec.dispatch(())>"-1"</Button>
+                <span class="py-2.5 px-5 mr-2 mb-2 w-32">
+                    "Value: " {move || value().to_string()} "!"
+                </span>
+                <Button on:click=move |_| inc.dispatch(())>"+1"</Button>
             </div>
             {move || error_msg().map(|msg| view! { cx, <p>"Error: " {msg.to_string()}</p>})}
         </div>
@@ -98,16 +97,13 @@ pub fn FormCounter(cx: Scope) -> impl IntoView {
     let adjust = create_server_action::<AdjustServerCount>(cx);
     let clear = create_server_action::<ClearServerCount>(cx);
 
-    let counter = create_local_resource(
+    let counter = create_resource(
         cx,
         move || (adjust.version().get(), clear.version().get()),
-        |_| async {
-            tracing::debug!("FormCounter running fetcher");
-            get_server_count().await
-        },
+        |_| async { get_server_count().await },
     );
+
     let value = move || {
-        tracing::debug!("FormCounter looking for value");
         counter
             .read(cx)
             .and_then(std::result::Result::ok)
@@ -123,7 +119,7 @@ pub fn FormCounter(cx: Scope) -> impl IntoView {
                 // calling a server function is the same as POSTing to its API URL
                 // so we can just do that with a form and button
                 <ActionForm action=clear>
-                    <Button b_type="submit" value="Clear">
+                    <Button b_type="submit">
                         "Clear"
                     </Button>
                 </ActionForm>
@@ -132,15 +128,17 @@ pub fn FormCounter(cx: Scope) -> impl IntoView {
                 <ActionForm action=adjust>
                     <input type="hidden" name="delta" value="-1"/>
                     <input type="hidden" name="msg" value="form value down"/>
-                    <Button b_type="submit" value="-1">
+                    <Button b_type="submit">
                         "-1"
                     </Button>
                 </ActionForm>
-                <span class="py-2.5 px-5 mr-2 mb-2 w-32">"Value: " {move || value().to_string()} "!"</span>
+                <span class="py-2.5 px-5 mr-2 mb-2 w-32">
+                    "Value: " {move || value().to_string()} "!"
+                </span>
                 <ActionForm action=adjust>
                     <input type="hidden" name="delta" value="1"/>
                     <input type="hidden" name="msg" value="form value up"/>
-                    <Button b_type="submit" value="+1">
+                    <Button b_type="submit">
                         "+1"
                     </Button>
                 </ActionForm>

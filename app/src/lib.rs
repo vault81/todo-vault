@@ -31,7 +31,7 @@ pub fn App(cx: Scope) -> impl IntoView {
             <Routes>
                 <Route path="/" view=|cx| view! { cx, <HomePage/> }/>
                 <Route path="/other" view=|cx| view! { cx, <OtherPage/> }/>
-                <Route path="/counter" view=|cx| view! { cx, <CounterPage /> }/>
+                <Route path="/counter" view=|cx| view! { cx, <CounterPage /> } />
             </Routes>
             </ErrorBoundary>
         </Router>

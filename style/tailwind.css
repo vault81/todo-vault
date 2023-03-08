@@ -1893,6 +1893,10 @@ input:checked + .toggle-bg {
   width: 50%;
 }
 
+.w-32 {
+  width: 8rem;
+}
+
 .w-4 {
   width: 1rem;
 }
