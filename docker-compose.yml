@@ -1,0 +1,9 @@
+services:
+  todo-vault:
+    build: .
+    image: tristandruyen/todo-vault
+    ports:
+      - 3000:3000
+    environment:
+      LEPTOS_OUTPUT_NAME: "todo-vault"
+      LEPTOS_SITE_ADDR: "0.0.0.0:3000"
