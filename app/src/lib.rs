@@ -21,7 +21,6 @@ pub fn App(cx: Scope) -> impl IntoView {
 
     view! {
         cx,
-
         <Stylesheet id="leptos" href="/pkg/todo-vault.css"/>
 
         <Title text="Welcome to Leptos"/>
@@ -30,8 +29,8 @@ pub fn App(cx: Scope) -> impl IntoView {
             <ErrorBoundary fallback=|cx, errors| view!{cx, <ErrorTemplate errors=errors/>}>
             <Routes>
                 <Route path="" view=|cx| view! { cx, <HomePage/> }/>
-                <Route path="other" view=|cx| view! { cx, <OtherPage/> }/>
-                <Route path="counter" ssr=SsrMode::Async view=|cx| view! { cx, <CounterPage /> } />
+                <Route path="/todo" view=|cx| view! { cx, <TodoPage/> }/>
+                <Route path="/counter" ssr=SsrMode::Async view=|cx| view! { cx, <CounterPage /> } />
             </Routes>
             </ErrorBoundary>
         </Router>
@@ -137,7 +136,7 @@ fn CounterPage(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-fn OtherPage(cx: Scope) -> impl IntoView {
+fn HomePage(cx: Scope) -> impl IntoView {
     view! { cx,
         <div class="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
             <Navbar/>
@@ -157,7 +156,7 @@ fn OtherPage(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-fn HomePage(cx: Scope) -> impl IntoView {
+fn TodoPage(cx: Scope) -> impl IntoView {
     view! { cx,
         <div class="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
             <Navbar/>
@@ -190,10 +189,10 @@ fn Navbar(cx: Scope) -> impl IntoView {
                             <A href="/" class="block p-0 text-gray-700 rounded dark:text-gray-400 hover:text-blue-700 dark:hover:text-white">"Home"</A>
                         </li>
                         <li>
-                            <A href="/other" class="block p-0 text-gray-700 rounded dark:text-gray-400 hover:text-blue-700 dark:hover:text-white">"Other"</A>
+                            <A href="/todo" class="block p-0 text-gray-700 rounded dark:text-gray-400 hover:text-blue-700 dark:hover:text-white">"Todo"</A>
                         </li>
                         <li>
-                            <A href="/counter" class="block p-0 text-gray-700 rounded dark:text-gray-400 hover:text-blue-700 dark:hover:text-white">"Counters"</A>
+                            <A href="/counter" class="block p-0 text-gray-700 rounded dark:text-gray-400 hover:text-blue-700 dark:hover:text-white">"Counter"</A>
                         </li>
                     </ul>
                 </div>

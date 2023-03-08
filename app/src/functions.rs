@@ -26,7 +26,7 @@ lazy_static::lazy_static! {
 
 #[server(GetServerCount, "/api")]
 pub async fn get_server_count() -> Result<i32, ServerFnError> {
-    tracing::info!("get server count");
+    tracing::debug!("get server count");
     Ok(COUNT.load(Ordering::Relaxed))
 }
 
@@ -43,11 +43,10 @@ pub async fn adjust_server_count(
     delta: i32,
     msg: String,
 ) -> Result<i32, ServerFnError> {
-    tracing::info!("adjust server count");
-    tracing::info!("delta: {}", delta);
-    tracing::info!("msg: {}", msg);
+    tracing::debug!("adjust server count");
+    tracing::debug!("delta: {}", delta);
+    tracing::debug!("msg: {}", msg);
     let db = db(cx)?;
-    tracing::info!("db: {:?}", db);
     let new = COUNT.load(Ordering::Relaxed) + delta;
     COUNT.store(new, Ordering::Relaxed);
     _ = COUNT_CHANNEL.send(&new).await;
@@ -57,7 +56,7 @@ pub async fn adjust_server_count(
 
 #[server(ClearServerCount, "/api")]
 pub async fn clear_server_count() -> Result<i32, ServerFnError> {
-    tracing::info!("clear server count");
+    tracing::debug!("clear server count");
     COUNT.store(0, Ordering::Relaxed);
     _ = COUNT_CHANNEL.send(&0).await;
     Ok(0)
