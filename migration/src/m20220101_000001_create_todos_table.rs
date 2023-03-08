@@ -9,17 +9,17 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Todo::Table)
+                    .table(Todos::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(Todo::Id)
+                        ColumnDef::new(Todos::Id)
                             .uuid()
                             .not_null()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(Todo::Title).string().not_null())
-                    .col(ColumnDef::new(Todo::Text).string().not_null())
-                    .col(ColumnDef::new(Todo::Done).boolean().not_null())
+                    .col(ColumnDef::new(Todos::Title).string().not_null())
+                    .col(ColumnDef::new(Todos::Text).string())
+                    .col(ColumnDef::new(Todos::Done).boolean().not_null())
                     .clone(),
             )
             .await
@@ -27,14 +27,14 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(Todo::Table).clone())
+            .drop_table(Table::drop().table(Todos::Table).clone())
             .await
     }
 }
 
 /// Learn more at https://docs.rs/sea-query#iden
 #[derive(Iden)]
-enum Todo {
+enum Todos {
     Table,
     Id,
     Title,
