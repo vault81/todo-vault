@@ -144,7 +144,6 @@ fn TodoRow(
             <td class="py-4 px-4">
                 {
                     todo.due_date
-                        .clone()
                         .map(|dd| dd.format("%d.%m.%Y").to_string())
                         .unwrap_or_else(|| "".to_string())
                 }

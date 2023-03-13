@@ -56,13 +56,9 @@ pub fn db(cx: Scope) -> Result<Arc<entity::db::Db>, ServerFnError> {
 
 #[server(AdjustServerCount, "/api")]
 pub async fn adjust_server_count(
-    cx: Scope,
     delta: i32,
     msg: String,
 ) -> Result<i32, ServerFnError> {
-    tracing::debug!("adjust server count");
-    tracing::debug!("delta: {}", delta);
-    tracing::debug!("msg: {}", msg);
     let new = COUNT.load(Ordering::Relaxed) + delta;
     COUNT.store(new, Ordering::Relaxed);
     _ = COUNT_CHANNEL.send(&new).await;
