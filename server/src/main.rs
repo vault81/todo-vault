@@ -94,9 +94,7 @@ async fn main() {
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::new().include_headers(true))
                 .on_request(DefaultOnRequest::new().level(Level::INFO))
-                .on_response(DefaultOnResponse::new().level(Level::INFO))
-                .on_eos(DefaultOnEos::new().level(Level::INFO))
-                .on_body_chunk(DefaultOnBodyChunk::new()),
+                .on_response(DefaultOnResponse::new().level(Level::INFO)),
         );
 
     tracing::info!("listening on http://{}", &addr);
