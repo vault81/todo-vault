@@ -23,8 +23,6 @@ use tower_http::{
     sensitive_headers::SetSensitiveRequestHeadersLayer,
     trace::{
         DefaultMakeSpan,
-        DefaultOnBodyChunk,
-        DefaultOnEos,
         DefaultOnRequest,
         DefaultOnResponse,
         TraceLayer,

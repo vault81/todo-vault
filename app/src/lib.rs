@@ -23,7 +23,7 @@ pub fn App(cx: Scope) -> impl IntoView {
         cx,
         <Stylesheet id="leptos" href="/pkg/todo-vault.css"/>
 
-        <Title text="Welcome to Leptos"/>
+        <Title text="TodoVault"/>
 
         <Router>
             <ErrorBoundary fallback=|cx, errors| view!{cx, <ErrorTemplate errors=errors/>}>
