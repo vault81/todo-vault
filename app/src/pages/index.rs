@@ -5,10 +5,10 @@ use crate::components::*;
 #[component]
 pub fn IndexPage(cx: Scope) -> impl IntoView {
     view! { cx,
-        <div class="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
+        <div class="flex overflow-y-auto flex-col h-screen bg-gray-100 dark:bg-gray-900">
             <Navbar/>
             <div class="container flex mx-auto">
-                <div class="overflow-y-auto p-4 my-4 w-64 min-w-full bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                <div class="p-4 my-4 w-64 min-w-full bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
                     <article class="format lg:format-lg dark:invert">
                         <h1>
                             "TodoVault"
