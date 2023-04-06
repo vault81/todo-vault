@@ -70,10 +70,6 @@ pub fn Navbar(cx: Scope) -> impl IntoView {
             path: "/todo".to_string(),
             name: "Todo".to_string(),
         },
-        NavItem {
-            path: "/counter".to_string(),
-            name: "Counter".to_string(),
-        },
     ];
     let (menu_open, set_menu_open) = create_signal(cx, false);
     let toggle_menu = move || set_menu_open.update(|curr| *curr = !*curr);
