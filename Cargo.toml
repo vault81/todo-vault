@@ -17,11 +17,11 @@ opt-level = 3
 members = ["app", "entity", "migration", "server", "wasm-lib"]
 
 [workspace.dependencies]
-leptos = { version = "0.2.5", default-features = false, features = ["serde"] }
-leptos_dom = { version = "0.2.5", default-features = false }
-leptos_meta = { version = "0.2.5", default-features = false }
-leptos_router = { version = "0.2.5", default-features = false }
-leptos_axum = { version = "0.2.5" }
+leptos = { version = "=0.2.5", default-features = false, features = ["serde"] }
+leptos_dom = { version = "=0.2.5", default-features = false }
+leptos_meta = { version = "=0.2.5", default-features = false }
+leptos_router = { version = "=0.2.5", default-features = false }
+leptos_axum = { version = "=0.2.5" }
 
 [[workspace.metadata.leptos]]
 # The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name
