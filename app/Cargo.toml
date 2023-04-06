@@ -33,5 +33,17 @@ rand = "=0.8.5"
 
 [features]
 default = ["ssr"]
-hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate", "entity/client-side"]
-ssr = ["entity/server-side", "leptos/ssr", "leptos_meta/ssr", "leptos_router/ssr", "dep:leptos_axum", "dep:broadcaster"]
+hydrate = [
+  "leptos/hydrate",
+  "leptos_meta/hydrate",
+  "leptos_router/hydrate",
+  "entity/client-side",
+]
+ssr = [
+  "entity/server-side",
+  "leptos/ssr",
+  "leptos_meta/ssr",
+  "leptos_router/ssr",
+  "dep:leptos_axum",
+  "dep:broadcaster",
+]

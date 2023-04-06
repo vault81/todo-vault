@@ -58,7 +58,7 @@ impl ActiveModel {
         due_date: Option<Date>,
     ) -> Self {
         Self {
-            id: Set(uuid::Uuid::new_v4()),
+            id: Set(uuid::Uuid::now_v7()),
             title: Set(title),
             description: Set(description),
             due_date: Set(due_date),

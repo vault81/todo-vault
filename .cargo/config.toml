@@ -1,0 +1,7 @@
+[build]
+rustflags = ["--cfg", "uuid_unstable"]
+rustdocflags = ["--cfg", "uuid_unstable"]
+
+[target.x86_64-unknown-linux-gnu]
+rustflags = ["--cfg", "uuid_unstable", "-C", "link-arg=-fuse-ld=/usr/bin/mold"]
+linker = "clang"
