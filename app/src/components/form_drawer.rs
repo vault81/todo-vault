@@ -100,90 +100,19 @@ impl IntoView for FormField {
     }
 }
 
-/// ### FormDrawerButton
+/// # FormDrawerButton Component
 ///
-/// Component function for creating a `FormDrawerButton` component.
+/// `FormDrawerButton` is a Leptos component for creating a collapsible form drawer
+/// that appears when clicking a button. The form drawer is customizable with the
+/// provided fields, a form action, icon, and title.
 ///
-/// ```rust
-/// pub fn FormDrawerButton<S, O>(
-///     cx: Scope,
-///     title: String,
-///     resource_name: String,
-///     action: Action<S, Result<O, ServerFnError>>,
-///     fields: Vec<FormField>,
-///     children: Children,
-/// ) -> impl IntoView
-/// where
-///     S: Clone + ServerFn + leptos::Serializable,
-///     O: Clone + Serializable + 'static,
-/// ```
-///
-/// #### Parameters
-///
-/// * `cx: Scope` - The current Scope.
-/// * `title: String` - Title for the FormDrawerButton to be displayed when the drawer
-///   is expanded.
-/// * `resource_name: String` - The name of the resource being created by the form.
-/// * `action: Action<S, Result<O, ServerFnError>>` - A Leptos `Action` to process the
-///   form submission.
-/// * `fields: Vec<FormField>` - A vector of FormField structures, defining the fields
-///   to be included in the form.
-/// * `children: Children` - Child components to include within the FormDrawerButton.
-///
-/// #### Returns
-///
-/// An `IntoView` implementation of the `FormDrawerButton` component.
-///
-/// ### Usage
-///
-/// To create a `FormDrawerButton`, provide a title, resource name, action, and a
-/// vector of `FormField` items.
-///
-/// ```rust
-/// FormDrawerButton(
-///     cx,
-///     "Create Item".to_string(),
-///     "Item".to_string(),
-///     action,
-///     vec![
-///         FormField {
-///             id: "title".to_string(),
-///             label: Some("Title".to_string()),
-///             input_type: FormFieldInputType::Text,
-///             placeholder: "Enter a title...".to_string(),
-///             value: "".to_string(),
-///             required: true,
-///         },
-///         FormField {
-///             id: "description".to_string(),
-///             label: Some("Description".to_string()),
-///             input_type: FormFieldInputType::TextArea,
-///             placeholder: "Enter a description...".to_string(),
-///             value: "".to_string(),
-///             required: false,
-///         },
-///         FormField {
-///             id: "date".to_string(),
-///             label: Some("Date".to_string()),
-///             input_type: FormFieldInputType::Date,
-///             placeholder: "".to_string(),
-///             value: "".to_string(),
-///             required: true,
-///         },
-///     ],
-///     children,
-/// )
-/// ```
-///
-/// This will render a button that, when clicked, expands to reveal the provided
-/// form fields and form action.
 #[component]
 pub fn FormDrawerButton<S, O>(
     cx: Scope,
+    icon: Svg,
     title: String,
     action: Action<S, Result<O, ServerFnError>>,
     fields: Vec<FormField>,
-    children: Children,
 ) -> impl IntoView
 where
     S: Clone + ServerFn + leptos::Serializable,
@@ -199,8 +128,7 @@ where
 
     let mut rng = rand::thread_rng();
     let random_id = base64::engine::general_purpose::STANDARD
-        .encode(rng.gen::<u64>().to_le_bytes())
-        .to_string();
+        .encode(rng.gen::<u64>().to_le_bytes());
 
     let close_drawer = move || {
         set_drawer_open(false);
@@ -208,21 +136,30 @@ where
     };
 
     let div_id = format!("-{}-{}", title.to_case(Case::Kebab), random_id);
+
+    let sr_title: String = format!("Open {} drawer", title);
+
     view! {
         cx,
-        // blur element
         <div>
             <div on:click=move |_| close_drawer() class="hidden fixed top-0 left-0 z-30 w-screen h-screen backdrop-blur-sm"  class:hidden={move || !blurred()} />
 
             // <!-- drawer init and show -->
             <Button on:click=move |_| open_drawer()>
-                {children(cx)}
+                <div class="w-5 h-5">
+                    {icon}
+                </div>
+                <span class="sr-only">
+                    {sr_title}
+                </span>
             </Button>
 
             // <!-- drawer component -->
-            <div id={format!("drawer-{div_id}")} class="overflow-y-auto fixed top-0 left-0 z-40 p-4 w-80 h-screen bg-white shadow-md transition-transform -translate-x-full dark:bg-gray-800 blur-none" class:transform-none={move || drawer_open()} tabindex="-1" aria-labelledby={format!("drawer-label-{div_id}")}>
-                <h5 id={format!("drawer-label-{div_id}")} class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400">
-                    <svg class="mr-2 w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+            <div id=format!("drawer-{div_id}") class="overflow-y-auto fixed top-0 left-0 z-40 p-4 w-80 h-screen bg-white shadow-md transition-transform -translate-x-full dark:bg-gray-800 blur-none" class:transform-none={drawer_open} tabindex="-1" aria-labelledby=format!("drawer-label-{div_id}")>
+                <h5 id=format!("drawer-label-{div_id}") class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400">
+                    <div class="mr-2 w-5 h-5">
+                        {icon}
+                    </div>
                     {title.clone()}
                 </h5>
                 <button type="button" on:click=move |_| close_drawer() data-drawer-hide="drawer-form" aria-controls="drawer-form" class="inline-flex absolute top-2.5 right-2.5 items-center p-1.5 text-sm text-gray-400 bg-transparent rounded-lg hover:text-gray-900 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" >
@@ -234,7 +171,7 @@ where
                         {fields}
                         <button type="reset" onclick="form.requestSubmit()" on:click=move |_| close_drawer() class="flex justify-center items-center py-2.5 px-5 mr-2 mb-2 w-full text-sm font-medium text-white bg-blue-700 rounded-lg dark:bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                             <div class="mr-2 w-5 h-5">
-                                {Svg::FilePlus}
+                                {icon}
                             </div>
                             {title.clone()}
                         </button>

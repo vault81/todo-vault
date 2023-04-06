@@ -3,6 +3,7 @@ use leptos::*;
 // asd
 // asd
 // asd
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Svg {
     CheckmarkChecked,
     CheckmarkUnchecked,

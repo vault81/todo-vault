@@ -28,8 +28,7 @@ pub fn App(cx: Scope) -> impl IntoView {
             <ErrorBoundary fallback=|cx, errors| view!{cx, <ErrorTemplate errors=errors/>}>
             <Routes>
                 <Route path="/" view=move |cx| view! { cx, <IndexPage/> }/>
-                <Route path="/todo" ssr=SsrMode::Async view=move |cx| view! { cx, <TodosPage /> }/>
-                <Route path="/counter" ssr=SsrMode::Async view=move |cx| view! { cx, <CounterPage /> } />
+                <Route path="/todo" view=move |cx| view! { cx, <TodosPage /> }/>
                 <Route path="/about" view=move |cx| view! { cx, <AboutPage /> } />
             </Routes>
             </ErrorBoundary>

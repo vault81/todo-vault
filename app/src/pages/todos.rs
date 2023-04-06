@@ -101,6 +101,7 @@ fn TodoRow(
                 <FormDrawerButton
                     action={edit_todo}
                     title= "Edit Todo".to_string()
+                    icon={Svg::FileEdit}
                     fields=vec![
                         FormField {
                             id: "id".to_string(),
@@ -135,12 +136,7 @@ fn TodoRow(
                             required: false,
                         },
                     ]
-                >
-                    <div class="w-5 h-5">
-                        {Svg::FileEdit}
-                        <span class="sr-only">"Add Todo"</span>
-                    </div>
-                </FormDrawerButton>
+                />
                 <ActionForm action=trash_todo>
                     <input type="hidden" name="id" value={move || todo.id.to_string()} />
                     <button type="submit" class="grid items-center p-2.5 text-sm text-gray-900 dark:text-gray-400 hover:text-orange-500">
@@ -193,7 +189,7 @@ fn Todos(cx: Scope) -> impl IntoView {
     let edit_todo = create_server_action::<EditTodo>(cx);
     let trash_todo = create_server_action::<TrashTodo>(cx);
 
-    let list_todos_resource = create_local_resource(
+    let list_todos_resource = create_resource(
         cx,
         move || {
             (
@@ -204,7 +200,7 @@ fn Todos(cx: Scope) -> impl IntoView {
         },
         move |_| async move { list_todos(cx).await.unwrap_or_default() },
     );
-    let list_todos_fn = move || list_todos_resource.read(cx);
+    // let list_todos_fn = move || list_todos_resource.read(cx);
 
     view! {
         cx,
@@ -213,6 +209,7 @@ fn Todos(cx: Scope) -> impl IntoView {
                 <FormDrawerButton
                     action={create_todo}
                     title="Add Todo".to_string()
+                    icon=Svg::FilePlus
                     fields=vec![
                         FormField {
                             id: "title".to_string(),
@@ -239,12 +236,7 @@ fn Todos(cx: Scope) -> impl IntoView {
                             required: false,
                         },
                     ]
-                >
-                    <div class="w-5 h-5">
-                        {Svg::FilePlus}
-                        <span class="sr-only">"Add Todo"</span>
-                    </div>
-                </FormDrawerButton>
+                />
                 <label for="table-search" class="sr-only">"Search"</label>
                 <div class="relative">
                     <div class="absolute left-0 top-2 items-center pl-3 pointer-events-none">
@@ -255,16 +247,20 @@ fn Todos(cx: Scope) -> impl IntoView {
                     <input type="text" id="table-search" class="block p-2 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-orange-500 focus:ring-orange-500 min-w-[7em]" placeholder="Search" />
                 </div>
             </div>
-            <Table
-                column_headers= vec!["Title".to_string(), "Description".to_string(), "Due Date".to_string(), "Action".to_string()]
+            <Transition
+                fallback={move || view! {cx,<tr class="bg-red-700">"Loading..."</tr>}}
             >
-                <For
-                    each={move || list_todos_fn().unwrap_or_default()}
-                    key={|todo| todo.calc_hash()}
-                    view=move |cx, todo: todos::Model| {view! {cx,
-                        <TodoRow todo={todo} trash_todo={trash_todo} edit_todo={edit_todo} />
-                }} />
-            </Table>
+                <Table
+                    column_headers= vec!["Title".to_string(), "Description".to_string(), "Due Date".to_string(), "Action".to_string()]
+                >
+                    <For
+                        each={move || list_todos_resource.read(cx).unwrap_or(vec![])}
+                        key={|todo| todo.calc_hash()}
+                        view=move |cx, todo: todos::Model| {view! {cx,
+                            <TodoRow todo={todo} trash_todo={trash_todo} edit_todo={edit_todo} />
+                    }} />
+                </Table>
+            </Transition>
         </div>
     }
 }
@@ -277,7 +273,7 @@ pub fn TodosPage(cx: Scope) -> impl IntoView {
             <Navbar/>
             <div class="container flex mx-auto">
                 <div class="p-4 my-4 w-64 min-w-full bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-                    <Todos />
+                    <Todos/>
                 </div>
             </div>
             <Footer/>
