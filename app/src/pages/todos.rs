@@ -10,68 +10,6 @@ use leptos_router::*;
 use crate::{components::*, functions::*};
 
 #[component]
-fn FormDrawer<S, O>(
-    cx: Scope,
-    create_todo_action: Action<S, Result<O, ServerFnError>>,
-) -> impl IntoView
-where
-    S: Clone + ServerFn + leptos::Serializable,
-    O: Clone + Serializable + 'static,
-{
-    let (blurred, set_blurred) = create_signal(cx, false);
-
-    let (drawer_open, set_drawer_open) = create_signal(cx, false);
-    let open_drawer = move || {
-        set_drawer_open(true);
-        set_blurred(true);
-    };
-    let close_drawer = move || {
-        set_drawer_open(false);
-        set_blurred(false);
-    };
-
-    view! {
-        cx,
-        // blur element
-        <div on:click=move |_| close_drawer() class="hidden fixed top-0 left-0 z-30 w-screen h-screen backdrop-blur-sm"  class:hidden={move || !blurred()} />
-
-        // <!-- drawer init and show -->
-        <Button on:click=move |_| open_drawer()>
-            <div class="w-5 h-5">
-                {Svg::FilePlus}
-                <span class="sr-only">"Add Todo"</span>
-            </div>
-        </Button>
-
-        // <!-- drawer component -->
-        <div id="drawer-form"  class="overflow-y-auto fixed top-0 left-0 z-40 p-4 w-80 h-screen bg-white shadow-md transition-transform -translate-x-full dark:bg-gray-800 blur-none" class:transform-none={move || drawer_open()} tabindex="-1" aria-labelledby="drawer-form-label">
-            <h5 id="drawer-form-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="mr-2 w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>"New Todo"</h5>
-            <button type="button" on:click=move |_| close_drawer() data-drawer-hide="drawer-form" aria-controls="drawer-form" class="inline-flex absolute top-2.5 right-2.5 items-center p-1.5 text-sm text-gray-400 bg-transparent rounded-lg hover:text-gray-900 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" >
-                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                <span class="sr-only">"Close menu"</span>
-            </button>
-            <div class="mb-6">
-                <ActionForm action=create_todo_action class="mb-6">
-                    <div class="mb-6">
-                        <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">"Title"</label>
-                        <input id="title" value="" type="text" name="title" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Do Dishes" required />
-                    </div>
-                    <div class="mb-6">
-                        <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">"Description"</label>
-                        <textarea id="description" value="" name="text" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write todo description..."></textarea>
-                    </div>
-                    <div class="relative mb-6">
-                        <label for="due_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">"Due Date"</label>
-                        <input type="date" value="" id="due_date" name="due_date" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 datepicker-input dark:focus:ring-blue-500 dark:focus:border-blue-500" min="2000-01-01" max="2999-99-99"/>
-                    </div>
-                    <button type="reset" onclick="this.form.requestSubmit()" on:click=move |_e: MouseEvent| close_drawer() class="flex justify-center items-center py-2.5 px-5 mr-2 mb-2 w-full text-sm font-medium text-white bg-blue-700 rounded-lg dark:bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:bg-blue-700 dark:focus:ring-blue-800"><svg class="mr-2 w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>"Create event"</button>
-                </ActionForm>
-            </div>
-        </div>
-    }
-}
-
-#[component]
 fn DropdownButton(cx: Scope) -> impl IntoView {
     let (dropdown_open, set_dropdown_open) = create_signal(cx, false);
     let toggle_modal = move || {
@@ -135,6 +73,7 @@ fn TodoRow(
     cx: Scope,
     todo: todos::Model,
     trash_todo: Action<TrashTodo, Result<(), ServerFnError>>,
+    edit_todo: Action<EditTodo, Result<(), ServerFnError>>,
 ) -> impl IntoView {
     view! {
         cx,
@@ -149,7 +88,7 @@ fn TodoRow(
                 {todo.title.clone()}
             </th>
             <td class="py-4 px-6">
-                {todo.text.clone()}
+                {todo.description.clone()}
             </td>
             <td class="py-4 px-4">
                 {
@@ -159,14 +98,49 @@ fn TodoRow(
                 }
             </td>
             <td class="flex py-4 px-6">
-                <ActionForm action=trash_todo>
-                    <input type="hidden" name="id" value={move || todo.id.to_string()} />
-                    <button type="submit" class="grid items-center p-2.5 text-sm text-gray-900 dark:text-gray-400 hover:text-orange-500">
-                        <div class="w-5 h-5">
-                            {Svg::FileEdit}
-                        </div>
-                    </button>
-                </ActionForm>
+                <FormDrawerButton
+                    action={edit_todo}
+                    title= "Edit Todo".to_string()
+                    fields=vec![
+                        FormField {
+                            id: "id".to_string(),
+                            label: None,
+                            input_type: FormFieldInputType::Hidden,
+                            placeholder: "".to_string(),
+                            value: todo.id.to_string(),
+                            required: true,
+                        },
+                        FormField {
+                            id: "title".to_string(),
+                            label: Some("Title".to_string()),
+                            input_type: FormFieldInputType::Text,
+                            placeholder: "Do things".to_string(),
+                            value: todo.title,
+                            required: true,
+                        },
+                        FormField {
+                            id: "description".to_string(),
+                            label: Some("Description".to_string()),
+                            input_type: FormFieldInputType::TextArea,
+                            placeholder: "".to_string(),
+                            value: todo.description.unwrap_or("".to_string()),
+                            required: false,
+                        },
+                        FormField {
+                            id: "due_date".to_string(),
+                            label: Some("Due Date".to_string()),
+                            input_type: FormFieldInputType::Date,
+                            placeholder: "".to_string(),
+                            value: todo.due_date.map(|dd| dd.format("%Y-%m-%d").to_string()).unwrap_or_else(|| "".to_string()),
+                            required: false,
+                        },
+                    ]
+                >
+                    <div class="w-5 h-5">
+                        {Svg::FileEdit}
+                        <span class="sr-only">"Add Todo"</span>
+                    </div>
+                </FormDrawerButton>
                 <ActionForm action=trash_todo>
                     <input type="hidden" name="id" value={move || todo.id.to_string()} />
                     <button type="submit" class="grid items-center p-2.5 text-sm text-gray-900 dark:text-gray-400 hover:text-orange-500">
@@ -201,12 +175,9 @@ pub fn Table(
                             </label>
                         </div>
                     </th>
-                    <For
-                        each={move || column_headers.clone()}
-                        key={|header| header.clone()}
-                        view=move |cx, header: String| {view! {cx,
-                            <th scope="col" class="py-3 px-6">{header}</th>
-                    }} />
+                    {column_headers.iter().map(|header| view! {cx,
+                        <th scope="col" class="py-3 px-6">{header}</th>
+                    }).collect::<Vec<_>>()}
                 </tr>
             </thead>
             <tbody>
@@ -218,15 +189,17 @@ pub fn Table(
 
 #[component]
 fn Todos(cx: Scope) -> impl IntoView {
-    let create_todo_action = create_server_action::<AddTodo>(cx);
+    let create_todo = create_server_action::<AddTodo>(cx);
+    let edit_todo = create_server_action::<EditTodo>(cx);
     let trash_todo = create_server_action::<TrashTodo>(cx);
 
     let list_todos_resource = create_local_resource(
         cx,
         move || {
             (
+                create_todo.version().get(),
+                edit_todo.version().get(),
                 trash_todo.version().get(),
-                create_todo_action.version().get(),
             )
         },
         move |_| async move { list_todos(cx).await.unwrap_or_default() },
@@ -237,7 +210,41 @@ fn Todos(cx: Scope) -> impl IntoView {
         cx,
         <div class="overflow-x-auto relative border border-gray-200 shadow-md sm:rounded-lg dark:border-gray-700">
             <div class="flex justify-between items-center px-2 pt-2 pb-4">
-                <FormDrawer create_todo_action={create_todo_action}/>
+                <FormDrawerButton
+                    action={create_todo}
+                    title="Add Todo".to_string()
+                    fields=vec![
+                        FormField {
+                            id: "title".to_string(),
+                            label: Some("Title".to_string()),
+                            input_type: FormFieldInputType::Text,
+                            placeholder: "Do things".to_string(),
+                            value: "".to_string(),
+                            required: true,
+                        },
+                        FormField {
+                            id: "description".to_string(),
+                            label: Some("Description".to_string()),
+                            input_type: FormFieldInputType::TextArea,
+                            placeholder: "".to_string(),
+                            value: "".to_string(),
+                            required: false,
+                        },
+                        FormField {
+                            id: "due_date".to_string(),
+                            label: Some("Due Date".to_string()),
+                            input_type: FormFieldInputType::Date,
+                            placeholder: "".to_string(),
+                            value: "".to_string(),
+                            required: false,
+                        },
+                    ]
+                >
+                    <div class="w-5 h-5">
+                        {Svg::FilePlus}
+                        <span class="sr-only">"Add Todo"</span>
+                    </div>
+                </FormDrawerButton>
                 <label for="table-search" class="sr-only">"Search"</label>
                 <div class="relative">
                     <div class="absolute left-0 top-2 items-center pl-3 pointer-events-none">
@@ -253,9 +260,9 @@ fn Todos(cx: Scope) -> impl IntoView {
             >
                 <For
                     each={move || list_todos_fn().unwrap_or_default()}
-                    key={|todo| todo.id.to_string()}
+                    key={|todo| todo.calc_hash()}
                     view=move |cx, todo: todos::Model| {view! {cx,
-                        <TodoRow todo={todo} trash_todo={trash_todo} />
+                        <TodoRow todo={todo} trash_todo={trash_todo} edit_todo={edit_todo} />
                 }} />
             </Table>
         </div>

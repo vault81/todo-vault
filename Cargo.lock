@@ -64,8 +64,10 @@ checksum = "7de8ce5e0f9f8d88245311066a578d72b7af3e7088f32783804676302df237e4"
 name = "app"
 version = "0.1.0"
 dependencies = [
+ "base64 0.21.0",
  "broadcaster",
  "cfg-if 1.0.0",
+ "convert_case 0.6.0",
  "entity",
  "getrandom",
  "http",
@@ -75,6 +77,7 @@ dependencies = [
  "leptos_dom",
  "leptos_meta",
  "leptos_router",
+ "rand",
  "serde",
  "thiserror",
  "tracing",

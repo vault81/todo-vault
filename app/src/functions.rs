@@ -28,7 +28,7 @@ pub fn register_server_functions() -> Result<(), ServerFnError> {
     AddTodo::register()?;
     ListTodos::register()?;
     TrashTodo::register()?;
-    ChangeTodo::register()?;
+    EditTodo::register()?;
     ToggleTodo::register()?;
     Ok(())
 }
@@ -90,7 +90,7 @@ pub async fn list_todos(cx: Scope) -> Result<Vec<todos::Model>, ServerFnError> {
 pub async fn add_todo(
     cx: Scope,
     title: String,
-    text: Option<String>,
+    description: Option<String>,
     due_date: Option<String>,
 ) -> Result<(), ServerFnError> {
     let db = db(cx)?;
@@ -104,7 +104,7 @@ pub async fn add_todo(
         })
         .transpose()?;
 
-    todos::ActiveModel::new(title, text, due_date)
+    todos::ActiveModel::new(title, description, due_date)
         .insert(db.conn())
         .await
         .map_err(|e| {
@@ -134,16 +134,24 @@ pub async fn trash_todo(
     Ok(())
 }
 
-#[server(ChangeTodo, "/api")]
-pub async fn change_todo(
+#[server(EditTodo, "/api")]
+pub async fn edit_todo(
     cx: Scope,
     id: uuid::Uuid,
     title: String,
-    text: Option<String>,
+    description: Option<String>,
+    due_date: Option<String>,
 ) -> Result<(), ServerFnError> {
     let db = db(cx)?;
-    // let uuid = entity::uuid::Uuid::parse_str(&id)
-    //     .map_err(|_| ServerFnError::ServerError("Invalid UUID".to_string()))?;
+
+    let due_date = due_date
+        .and_then(|str| if str.is_empty() { None } else { Some(str) })
+        .map(|string| {
+            let naive_date = NaiveDate::parse_from_str(&string, "%Y-%m-%d")
+                .map_err(|op| ServerFnError::ServerError(format!("{}", op)))?;
+            Ok(naive_date)
+        })
+        .transpose()?;
 
     let mut updated: todos::ActiveModel = todos::Entity::find_by_id(id)
         .one(db.conn())
@@ -153,7 +161,8 @@ pub async fn change_todo(
         .into();
 
     updated.title = entity::sea_orm::Set(title);
-    updated.text = entity::sea_orm::Set(text);
+    updated.description = entity::sea_orm::Set(description);
+    updated.due_date = entity::sea_orm::Set(due_date);
 
     updated.update(db.conn()).await.map_err(|_| {
         ServerFnError::ServerError("No todo updated".to_string())

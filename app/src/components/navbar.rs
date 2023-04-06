@@ -33,9 +33,6 @@ impl NavItem {
     }
 }
 
-#[derive(Clone, Debug)]
-struct NavItems(Vec<NavItem>);
-
 impl IntoView for NavItem {
     fn into_view(self, cx: Scope) -> View {
         let route_cx = use_route(cx);
@@ -62,41 +59,22 @@ impl IntoView for NavItem {
     }
 }
 
-impl IntoView for NavItems {
-    fn into_view(self, cx: Scope) -> View {
-        view! {cx,
-            <For
-                each={move || self.clone().0}
-                key={|nav_item| nav_item.href()}
-                view=move |cx, item: NavItem| {view! {cx,
-                <li>
-                    {item}
-                </li>
-            }} />
-        }
-        .into_view(cx)
-    }
-}
-
 #[component]
 pub fn Navbar(cx: Scope) -> impl IntoView {
-    let get_nav_items = move || {
-        let items = vec![
-            NavItem {
-                path: "".to_string(),
-                name: "Home".to_string(),
-            },
-            NavItem {
-                path: "/todo".to_string(),
-                name: "Todo".to_string(),
-            },
-            NavItem {
-                path: "/counter".to_string(),
-                name: "Counter".to_string(),
-            },
-        ];
-        NavItems(items)
-    };
+    let items = vec![
+        NavItem {
+            path: "".to_string(),
+            name: "Home".to_string(),
+        },
+        NavItem {
+            path: "/todo".to_string(),
+            name: "Todo".to_string(),
+        },
+        NavItem {
+            path: "/counter".to_string(),
+            name: "Counter".to_string(),
+        },
+    ];
     let (menu_open, set_menu_open) = create_signal(cx, false);
     let toggle_menu = move || set_menu_open.update(|curr| *curr = !*curr);
 
@@ -117,7 +95,7 @@ pub fn Navbar(cx: Scope) -> impl IntoView {
                 </button>
                 <div class="w-full md:block md:w-auto" class:hidden=move || !menu_open() id="navbar-default">
                     <ul class="flex flex-col p-4 mt-4 bg-gray-50 rounded-lg border border-gray-100 md:flex-row md:mt-0 md:space-x-8 md:text-sm md:font-medium md:bg-white md:border-0 dark:bg-gray-800 dark:border-gray-700 md:dark:bg-gray-900">
-                        {get_nav_items}
+                        {items}
                     </ul>
                 </div>
             </div>

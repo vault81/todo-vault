@@ -18,7 +18,7 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(Todos::Title).string().not_null())
-                    .col(ColumnDef::new(Todos::Text).string())
+                    .col(ColumnDef::new(Todos::Description).string())
                     .col(ColumnDef::new(Todos::Done).boolean().not_null())
                     .col(ColumnDef::new(Todos::DueDate).date())
                     .col(
@@ -45,7 +45,7 @@ enum Todos {
     Table,
     Id,
     Title,
-    Text,
+    Description,
     Done,
     DueDate,
     CreatedAt,
