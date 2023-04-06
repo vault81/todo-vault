@@ -2,7 +2,8 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
 module.exports = {
   content: [
-    "./app/src/*.rs",
+    "./app/src/**/*.rs",
+    "./public/*.html",
     "./node_modules/flowbite/**/*.js",
   ],
   safelist: [

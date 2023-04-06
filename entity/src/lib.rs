@@ -1,16 +1,11 @@
+#![forbid(unsafe_code)]
+pub extern crate chrono;
 pub extern crate sea_orm;
+pub extern crate uuid;
 
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+pub mod prelude;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+#[cfg(feature = "server-side")]
+pub mod db;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub mod todos;

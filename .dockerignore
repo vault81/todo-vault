@@ -1,0 +1,5 @@
+.cargo/
+.git/
+target/
+Dockerfile
+docker-compose.yml
