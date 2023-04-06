@@ -12,6 +12,7 @@ pub enum Svg {
     Logo,
     Hamburger,
     Save,
+    Search,
     Trash2,
 }
 
@@ -31,7 +32,7 @@ impl IntoView for Svg {
                         Svg::Hamburger => include_str!("../../../style/inlined/hamburger.svg"),
                         Svg::Save => include_str!("../../../style/inlined/save.svg"),
                         Svg::Trash2 => include_str!("../../../style/inlined/trash-2.svg"),
-
+                        Svg::Search => include_str!("../../../style/inlined/search.svg"),
                     }
                 }
             >

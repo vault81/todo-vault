@@ -3,17 +3,21 @@ use entity::{
     todos::{self, Model},
     uuid,
 };
-use leptos::*;
+use leptos::{ev::MouseEvent, *};
 use leptos_dom::*;
 use leptos_router::*;
 
 use crate::{components::*, functions::*};
 
 #[component]
-fn FormDrawer(
+fn FormDrawer<S, O>(
     cx: Scope,
-    create_todo_action: Action<AddTodo, Result<(), ServerFnError>>,
-) -> impl IntoView {
+    create_todo_action: Action<S, Result<O, ServerFnError>>,
+) -> impl IntoView
+where
+    S: Clone + ServerFn + leptos::Serializable,
+    O: Clone + Serializable + 'static,
+{
     let (blurred, set_blurred) = create_signal(cx, false);
 
     let (drawer_open, set_drawer_open) = create_signal(cx, false);
@@ -60,7 +64,7 @@ fn FormDrawer(
                         <label for="due_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">"Due Date"</label>
                         <input type="date" value="" id="due_date" name="due_date" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 datepicker-input dark:focus:ring-blue-500 dark:focus:border-blue-500" min="2000-01-01" max="2999-99-99"/>
                     </div>
-                    <button type="submit" class="flex justify-center items-center py-2.5 px-5 mr-2 mb-2 w-full text-sm font-medium text-white bg-blue-700 rounded-lg dark:bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:bg-blue-700 dark:focus:ring-blue-800"><svg class="mr-2 w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>"Create event"</button>
+                    <button type="reset" onclick="this.form.requestSubmit()" on:click=move |_e: MouseEvent| close_drawer() class="flex justify-center items-center py-2.5 px-5 mr-2 mb-2 w-full text-sm font-medium text-white bg-blue-700 rounded-lg dark:bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:bg-blue-700 dark:focus:ring-blue-800"><svg class="mr-2 w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>"Create event"</button>
                 </ActionForm>
             </div>
         </div>
@@ -177,6 +181,42 @@ fn TodoRow(
 }
 
 #[component]
+pub fn Table(
+    cx: Scope,
+    children: Children,
+    column_headers: Vec<String>,
+) -> impl IntoView {
+    view! {
+        cx,
+        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:text-gray-400 dark:bg-gray-700">
+                <tr>
+                    <th scope="col" class="p-4">
+                        <div class="flex items-center">
+                            <input id="checkbox-all-search" type="checkbox"
+                                class="w-4 h-4 text-orange-600 bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:ring-offset-gray-800 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 dark:focus:ring-offset-gray-800"
+                            />
+                            <label for="checkbox-all-search" class="sr-only">
+                                "checkbox"
+                            </label>
+                        </div>
+                    </th>
+                    <For
+                        each={move || column_headers.clone()}
+                        key={|header| header.clone()}
+                        view=move |cx, header: String| {view! {cx,
+                            <th scope="col" class="py-3 px-6">{header}</th>
+                    }} />
+                </tr>
+            </thead>
+            <tbody>
+                {children(cx)}
+            </tbody>
+        </table>
+    }
+}
+
+#[component]
 fn Todos(cx: Scope) -> impl IntoView {
     let create_todo_action = create_server_action::<AddTodo>(cx);
     let trash_todo = create_server_action::<TrashTodo>(cx);
@@ -201,44 +241,23 @@ fn Todos(cx: Scope) -> impl IntoView {
                 <label for="table-search" class="sr-only">"Search"</label>
                 <div class="relative">
                     <div class="absolute left-0 top-2 items-center pl-3 pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+                        <div class="w-5 h-5">
+                            {Svg::Search}
+                        </div>
                     </div>
                     <input type="text" id="table-search" class="block p-2 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-orange-500 focus:ring-orange-500 min-w-[7em]" placeholder="Search" />
                 </div>
             </div>
-            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:text-gray-400 dark:bg-gray-700">
-                    <tr>
-                        <th scope="col" class="p-4">
-                            <div class="flex items-center">
-                                <input id="checkbox-all-search" type="checkbox" class="w-4 h-4 text-orange-600 bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:ring-offset-gray-800 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 dark:focus:ring-offset-gray-800" />
-                                <label for="checkbox-all-search" class="sr-only">"checkbox"</label>
-                            </div>
-                        </th>
-                        <th scope="col" class="py-3 px-6">
-                            "Title"
-                        </th>
-                        <th scope="col" class="py-3 px-6">
-                            "Description"
-                        </th>
-                        <th scope="col" class="py-3 px-4">
-                            "Due Date"
-                        </th>
-                        <th scope="col" class="py-3 px-6">
-                            "Action"
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <For
-                        each={move || list_todos_fn().unwrap_or_default()}
-                        key={|todo| todo.id.to_string()}
-                        view=move |cx, todo: todos::Model| {view! {cx,
-                            <TodoRow todo={todo} trash_todo={trash_todo} />
-                    }} />
-                    <div></div>
-                </tbody>
-            </table>
+            <Table
+                column_headers= vec!["Title".to_string(), "Description".to_string(), "Due Date".to_string(), "Action".to_string()]
+            >
+                <For
+                    each={move || list_todos_fn().unwrap_or_default()}
+                    key={|todo| todo.id.to_string()}
+                    view=move |cx, todo: todos::Model| {view! {cx,
+                        <TodoRow todo={todo} trash_todo={trash_todo} />
+                }} />
+            </Table>
         </div>
     }
 }
