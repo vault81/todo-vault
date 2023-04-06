@@ -1,33 +1,36 @@
-FROM ghcr.io/rust-lang/rust:nightly-bullseye-slim as build
+FROM rust:alpine as build
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apk add --no-cache \
     ca-certificates \
     cmake \
     curl \
     git \
-    sqlite3 \
-    libssl-dev \
-    pkg-config \
-    clang \
-    && rm -rf /var/lib/apt/lists/*
+    sqlite-dev \
+    musl-dev \
+    openssl-dev \
+    pkgconfig \
+    clang
+
 ENV LANG=C.UTF-8
-ENV LANGUAGE=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
-# install leptos build helper cli
-RUN cargo install --git https://github.com/akesson/cargo-leptos cargo-leptos
 
 # Build
 WORKDIR /build
 
-# install rust toolchain
+# Copy the rust-toolchain.toml file and install the Rust toolchain
 COPY rust-toolchain.toml .
 RUN cargo --version
 
+# Install the Leptos build helper CLI
+RUN cargo install cargo-leptos
+
 COPY . .
 
+# Build the application
 RUN cargo leptos build --release
 
+# Clean up the SQLite database and make the server executable
 RUN sqlite3 ./target/default.sqlite3 "VACUUM;"
 RUN chmod +x ./target/server/release/server
 

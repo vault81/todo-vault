@@ -1,7 +1,6 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 #![forbid(unsafe_code)]
-#![feature(once_cell)]
 pub mod error_template;
 
 mod components;

@@ -21,12 +21,7 @@ use leptos_axum::{
 };
 use tower_http::{
     sensitive_headers::SetSensitiveRequestHeadersLayer,
-    trace::{
-        DefaultMakeSpan,
-        DefaultOnRequest,
-        DefaultOnResponse,
-        TraceLayer,
-    },
+    trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
 };
 use tracing::Level;
 
