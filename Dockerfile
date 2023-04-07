@@ -18,16 +18,15 @@ ENV LANGUAGE=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
 # build & install mold linker
-RUN git clone https://github.com/rui314/mold.git && \
+RUN git clone https://github.com/rui314/mold.git -b v1.11.0 --depth 1 && \
     mkdir mold/build && \
     cd mold/build && \
-    git checkout v1.11.0
-
-RUN ../install-build-deps.sh
-
-RUN cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=c++ .. && \
+    ../install-build-deps.sh && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=c++ .. && \
     cmake --build . -j $(nproc) && \
-    cmake --install .
+    cmake --install . && \
+    cd ../../ && \
+    rm -rf mold
 
 # install leptos build helper cli
 RUN cargo install --git https://github.com/akesson/cargo-leptos cargo-leptos --force
@@ -43,15 +42,16 @@ COPY . .
 
 RUN cargo leptos build --release
 
-RUN sqlite3 ./target/default.sqlite3 "VACUUM;"
-RUN chmod +x ./target/server/release/server
+RUN mkdir -p ./out/target \
+    && cp -r ./target/site                                              ./out/target/site \
+    && cp -r ./target/server/x86_64-unknown-linux-gnu/release/server    ./out/server
+
+RUN chmod +x ./out/server
+RUN sqlite3 ./out/target/default.sqlite3 "VACUUM;"
 
 # this distroless base image is just ~20MB
-FROM gcr.io/distroless/cc-debian11
-
-COPY --from=build /build/target/default.sqlite3 ./target/default.sqlite3
-COPY --from=build /build/target/site ./target/site
-COPY --from=build /build/target/server/release/server ./server
+FROM gcr.io/distroless/static-debian11
+COPY --from=build /build/out ./
 
 # total docker image size is ~36MB
 ENTRYPOINT ["./server"]
