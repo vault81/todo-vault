@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
     sqlite3 \
+    npm \
     libssl-dev \
     pkg-config \
     clang \
@@ -28,8 +29,14 @@ RUN git clone https://github.com/rui314/mold.git -b v1.11.0 --depth 1 && \
     cd ../../ && \
     rm -rf mold
 
+
 # install leptos build helper cli
 RUN cargo install --git https://github.com/akesson/cargo-leptos cargo-leptos --force
+
+ADD ./package.json ./package.json
+ADD ./package-lock.json ./package-lock.json
+
+RUN npm install
 
 # Build
 WORKDIR /build
