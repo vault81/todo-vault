@@ -77,27 +77,29 @@ fn TodoRow(
 ) -> impl IntoView {
     view! {
         cx,
-        <tr class="font-normal bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-            <td class="p-4 w-4">
+        <tr class="grid grid-cols-12 items-baseline my-4 bg-white rounded border md:table-row md:my-0 md:rounded-none md:border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 grid-rows-auto bak-grid-rows-3 min-w-[20rem] dark:hover:bg-gray-600">
+            <td class="order-1 col-start-1 row-span-3 row-start-1 justify-self-center p-4">
                 <div class="flex items-center">
-                    <input id="checkbox-table-search-1" type="checkbox" class="w-4 h-4 text-orange-600 bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:ring-offset-gray-800 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 dark:focus:ring-offset-gray-800" />
-                    <label for="checkbox-table-search-1" class="sr-only">"checkbox"</label>
+                    <input type="checkbox" class="w-4 h-4 text-orange-600 bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:ring-offset-gray-800 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 dark:focus:ring-offset-gray-800" />
                 </div>
             </td>
-            <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <td class="order-2 col-span-8 col-start-2 row-start-1 p-4 min-w-0 text-lg font-medium text-gray-900 md:text-base dark:text-white truncate">
                 {todo.title.clone()}
-            </th>
-            <td class="py-4 px-6">
+            </td>
+            <td class="overflow-auto order-4 col-span-8 col-start-2 row-start-2 p-4 min-w-0 min-h-0 max-h-64 whitespace-pre text-ellipsis md:truncate">
                 {todo.description.clone()}
             </td>
-            <td class="py-4 px-4">
+            <td class="order-5 col-span-8 col-start-2 row-start-3 p-4">
+                <div class="inline md:hidden">
+                    "Due Date: "
+                </div>
                 {
                     todo.due_date
                         .map(|dd| dd.format("%d.%m.%Y").to_string())
                         .unwrap_or_else(|| "".to_string())
                 }
             </td>
-            <td class="flex py-4 px-6">
+            <td class="grid order-3 grid-cols-1 col-span-2 col-end-12 row-span-3 row-start-1 gap-6 justify-items-center justify-self-end self-center p-4 md:flex-row md:grid-cols-2 md:grid-rows-1 md:grid-rows-none md:px-2 asdasdgrid-rows-2">
                 <FormDrawerButton
                     action={edit_todo}
                     title= "Edit Todo".to_string()
@@ -139,11 +141,11 @@ fn TodoRow(
                 />
                 <ActionForm action=trash_todo>
                     <input type="hidden" name="id" value={move || todo.id.to_string()} />
-                    <button type="submit" class="grid items-center p-2.5 text-sm text-gray-900 dark:text-gray-400 hover:text-orange-500">
+                    <Button b_type="submit">
                         <div class="w-5 h-5">
                             {Svg::Trash2}
                         </div>
-                    </button>
+                    </Button>
                 </ActionForm>
             </td>
         </tr>
@@ -158,18 +160,10 @@ pub fn Table(
 ) -> impl IntoView {
     view! {
         cx,
-        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:text-gray-400 dark:bg-gray-700">
+        <table class="w-full text-left text-gray-500 table-fixed dark:text-gray-400">
+            <thead class="hidden text-gray-700 uppercase bg-gray-50 md:table-header-group dark:text-gray-400 dark:bg-gray-700">
                 <tr>
-                    <th scope="col" class="p-4">
-                        <div class="flex items-center">
-                            <input id="checkbox-all-search" type="checkbox"
-                                class="w-4 h-4 text-orange-600 bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:ring-offset-gray-800 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 dark:focus:ring-offset-gray-800"
-                            />
-                            <label for="checkbox-all-search" class="sr-only">
-                                "checkbox"
-                            </label>
-                        </div>
+                    <th scope="col" class="p-3 w-8">
                     </th>
                     {column_headers.iter().map(|header| view! {cx,
                         <th scope="col" class="py-3 px-6">{header}</th>
@@ -204,7 +198,7 @@ fn Todos(cx: Scope) -> impl IntoView {
 
     view! {
         cx,
-        <div class="overflow-x-auto relative border border-gray-200 shadow-md sm:rounded-lg dark:border-gray-700">
+        <div class="overflow-x-auto relative border-0 border-gray-200 shadow-md md:rounded-lg md:border dark:border-gray-700">
             <div class="flex justify-between items-center px-2 pt-2 pb-4">
                 <FormDrawerButton
                     action={create_todo}
