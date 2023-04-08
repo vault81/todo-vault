@@ -39,6 +39,7 @@ COPY rust-toolchain.toml .
 RUN cargo --version
 
 COPY . .
+COPY .cargo/docker-config.toml .cargo/config.toml
 
 RUN cargo leptos build --release
 
