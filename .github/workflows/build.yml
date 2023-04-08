@@ -58,10 +58,15 @@ jobs:
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
-            dist/
             target/
           key: ${{ runner.os }}-cargo-pkg-${{ hashFiles('**/Cargo.lock') }}
-      - name: cargo check
+      - name: cargo check wasm-lib
         uses: actions-rs/cargo@v1
         with:
           command: check
+          args: --target wasm32-unknown-unknown -p wasm-lib
+      - name: cargo check server
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --target x86_64-unknown-linux-gnu -p server
