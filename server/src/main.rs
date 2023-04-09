@@ -2,7 +2,7 @@
 mod fileserv;
 use std::sync::Arc;
 
-use app::{functions::register_server_functions, *};
+use app::*;
 use axum::{
     body::Body,
     extract::{Extension, Path},

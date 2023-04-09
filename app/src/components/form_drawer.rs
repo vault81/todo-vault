@@ -58,42 +58,75 @@ pub struct FormField {
 impl IntoView for FormField {
     fn into_view(self, cx: Scope) -> View {
         let label = match self.label {
-            Some(label) => view! {cx,
-                <label for=self.id.clone() class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{label}</label>
-            }.into_view(cx),
-            None => view! {cx, <></>}.into_view(cx)
+            Some(label) => view! { cx,
+                               <label
+                                   for=self.id.clone()
+                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                               >
+                                   {label}
+                               </label>
+                           }.into_view(cx),
+            None => view! { cx, <></> }.into_view(cx)
         };
 
         match self.input_type {
             FormFieldInputType::Text => {
-                view! {cx,
+                view! { cx,
                     <div class="mb-6">
                         {label}
-                        <input id=self.id.clone() value=self.value.clone() type="text" name=self.id.clone() class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=self.placeholder required=self.required />
+                        <input
+                            id=self.id.clone()
+                            value=self.value.clone()
+                            type="text"
+                            name=self.id.clone()
+                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder=self.placeholder
+                            required=self.required
+                        />
                     </div>
                 }.into_view(cx)
             }
             FormFieldInputType::TextArea => {
-                view! {cx,
+                view! { cx,
                     <div class="mb-6">
                         {label}
-                        <textarea id=self.id.clone()  name=self.id.clone() rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=self.placeholder>
+                        <textarea
+                            id=self.id.clone()
+                            name=self.id.clone()
+                            rows="4"
+                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder=self.placeholder
+                        >
                             {self.value.clone()}
-                       </textarea>
+                        </textarea>
                     </div>
                 }.into_view(cx)
             }
             FormFieldInputType::Date => {
-                view! {cx,
+                view! { cx,
                     <div class="relative mb-6">
                         {label}
-                        <input type="date" value="" id=self.id.clone() name=self.id.clone() value=self.value.clone() class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 datepicker-input dark:focus:ring-blue-500 dark:focus:border-blue-500" min="2000-01-01" max="2999-99-99"/>
+                        <input
+                            type="date"
+                            value=""
+                            id=self.id.clone()
+                            name=self.id.clone()
+                            value=self.value.clone()
+                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 datepicker-input dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            min="2000-01-01"
+                            max="2999-99-99"
+                        />
                     </div>
                 }.into_view(cx)
             }
             FormFieldInputType::Hidden => {
-                view! {cx,
-                    <input type="hidden" id=self.id.clone() name=self.id.clone() value=self.value.clone() />
+                view! { cx,
+                    <input
+                        type="hidden"
+                        id=self.id.clone()
+                        name=self.id.clone()
+                        value=self.value.clone()
+                    />
                 }.into_view(cx)
             }
         }
@@ -126,26 +159,52 @@ where
         let fields = fields.clone();
         match drawer_open() {
             true => {
-                view! {
-                    cx,
-                    <div id="drawer" class="overflow-y-auto fixed top-0 left-0 z-40 p-4 w-80 h-screen bg-white shadow-md -translate-x-full dark:bg-gray-800 animate-show" tabindex="-1" aria-labelledby="drawer-label">
-                        <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400">
-                            <div class="mr-2 w-5 h-5">
-                                {icon}
-                            </div>
+                view! { cx,
+                    <div
+                        id="drawer"
+                        class="overflow-y-auto fixed top-0 left-0 z-40 p-4 w-80 h-screen bg-white shadow-md -translate-x-full dark:bg-gray-800 animate-show"
+                        tabindex="-1"
+                        aria-labelledby="drawer-label"
+                    >
+                        <h5
+                            id="drawer-label"
+                            class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"
+                        >
+                            <div class="mr-2 w-5 h-5">{icon}</div>
                             {title.clone()}
                         </h5>
-                        <button type="button" on:click=move |_| set_drawer_open(false) data-drawer-hide="drawer-form" aria-controls="drawer-form" class="inline-flex absolute top-2.5 right-2.5 items-center p-1.5 text-sm text-gray-400 bg-transparent rounded-lg hover:text-gray-900 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" >
-                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        <button
+                            type="button"
+                            on:click=move |_| set_drawer_open(false)
+                            data-drawer-hide="drawer-form"
+                            aria-controls="drawer-form"
+                            class="inline-flex absolute top-2.5 right-2.5 items-center p-1.5 text-sm text-gray-400 bg-transparent rounded-lg hover:text-gray-900 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
+                        >
+                            <svg
+                                aria-hidden="true"
+                                class="w-5 h-5"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"
+                                ></path>
+                            </svg>
                             <span class="sr-only">"Close menu"</span>
                         </button>
                         <div class="mb-6">
                             <ActionForm action=action class="mb-6">
                                 {fields}
-                                <button type="reset" onclick="form.requestSubmit()" on:click=move |_| set_drawer_open(false) class="flex justify-center items-center py-2.5 px-5 mr-2 mb-2 w-full text-sm font-medium text-white bg-blue-700 rounded-lg dark:bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                    <div class="mr-2 w-5 h-5">
-                                        {icon}
-                                    </div>
+                                <button
+                                    type="reset"
+                                    onclick="form.requestSubmit()"
+                                    on:click=move |_| set_drawer_open(false)
+                                    class="flex justify-center items-center py-2.5 px-5 mr-2 mb-2 w-full text-sm font-medium text-white bg-blue-700 rounded-lg dark:bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                >
+                                    <div class="mr-2 w-5 h-5">{icon}</div>
                                     {title.clone()}
                                 </button>
                             </ActionForm>
@@ -154,31 +213,24 @@ where
                 }.into_view(cx)
             }
             false => {
-                view! {cx,
-                    <div>
-                    </div>
-                }.into_view(cx)
+                view! { cx, <div></div> }.into_view(cx)
             }
         }
     };
 
-    view! {
-        cx,
+    view! { cx,
         <div>
-            <div on:click=move |_| set_drawer_open(false) class="fixed top-0 left-0 z-30 w-screen h-screen transition-all pointer-events-none"  class:pointer-events-none={move || !drawer_open()} class:backdrop-blur-sm={drawer_open} />
-
-            // <!-- drawer init and show -->
+            <div
+                on:click=move |_| set_drawer_open(false)
+                class="fixed top-0 left-0 z-30 w-screen h-screen transition-all pointer-events-none"
+                class:pointer-events-none=move || !drawer_open()
+                class:backdrop-blur-sm=drawer_open
+            ></div>
             <Button on:click=move |_| set_drawer_open(true)>
-                <div class="w-5 h-5">
-                    {icon}
-                </div>
-                <span class="sr-only">
-                    {sr_title}
-                </span>
+                <div class="w-5 h-5">{icon}</div>
+                <span class="sr-only">{sr_title}</span>
             </Button>
-
-            // <!-- drawer component -->
-            { drawer }
+            {drawer}
         </div>
     }
 }

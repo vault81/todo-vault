@@ -47,13 +47,6 @@ pub async fn get_server_count() -> Result<i32, ServerFnError> {
     Ok(COUNT.load(Ordering::Relaxed))
 }
 
-#[cfg(feature = "ssr")]
-pub fn db(cx: Scope) -> Result<Arc<entity::db::Db>, ServerFnError> {
-    use_context::<Arc<entity::db::Db>>(cx)
-        .ok_or("Pool missing.")
-        .map_err(|e| ServerFnError::ServerError(e.to_string()))
-}
-
 #[server(AdjustServerCount, "/api")]
 pub async fn adjust_server_count(delta: i32) -> Result<i32, ServerFnError> {
     let new = COUNT.load(Ordering::Relaxed) + delta;
@@ -68,6 +61,13 @@ pub async fn clear_server_count() -> Result<i32, ServerFnError> {
     COUNT.store(0, Ordering::Relaxed);
     _ = COUNT_CHANNEL.send(&0).await;
     Ok(0)
+}
+
+#[cfg(feature = "ssr")]
+pub fn db(cx: Scope) -> Result<Arc<entity::db::Db>, ServerFnError> {
+    use_context::<Arc<entity::db::Db>>(cx)
+        .ok_or("Pool missing.")
+        .map_err(|e| ServerFnError::ServerError(e.to_string()))
 }
 
 #[server(ListTodos, "/api")]

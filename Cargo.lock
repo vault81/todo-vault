@@ -71,6 +71,7 @@ dependencies = [
  "entity",
  "getrandom",
  "http",
+ "js-sys",
  "lazy_static",
  "leptos",
  "leptos_axum",
@@ -81,6 +82,8 @@ dependencies = [
  "serde",
  "thiserror",
  "tracing",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]

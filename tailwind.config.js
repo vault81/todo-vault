@@ -24,11 +24,17 @@ module.exports = {
   theme: {
     extend: {
       animation: {
-        show: "show 150ms 0ms ease-in-out forwards",
+        show: "show 150ms 0ms ease-in-out both",
+        "intro-1": "intro 250ms 50ms ease-in-out both",
+        "intro-2": "intro 250ms 150ms ease-in-out both",
       },
       keyframes: {
         show: {
           "100%": { opacity: 1, transform: "none" },
+        },
+        intro: {
+          "0%": { opacity: 0.0 },
+          "100%": { opacity: 1 },
         },
       },
       invert: {

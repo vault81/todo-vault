@@ -30,20 +30,11 @@ tracing = { version = "=0.1.37", features = ["async-await", "log"] }
 base64 = "=0.21.0"
 convert_case = "=0.6.0"
 rand = "=0.8.5"
+wasm-bindgen = "0.2"
+web-sys = { version = "0.3", features = ["Document", "Element", "Event", "EventTarget", "Window", "console", "DomRect"] }
+js-sys = "0.3.61"
 
 [features]
 default = ["ssr"]
-hydrate = [
-  "leptos/hydrate",
-  "leptos_meta/hydrate",
-  "leptos_router/hydrate",
-  "entity/client-side",
-]
-ssr = [
-  "entity/server-side",
-  "leptos/ssr",
-  "leptos_meta/ssr",
-  "leptos_router/ssr",
-  "dep:leptos_axum",
-  "dep:broadcaster",
-]
+hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate", "entity/client-side"]
+ssr = ["entity/server-side", "leptos/ssr", "leptos_meta/ssr", "leptos_router/ssr", "dep:leptos_axum", "dep:broadcaster"]
