@@ -24,7 +24,7 @@ use super::*;
 /// * `Date`
 /// * `Hidden`
 ///
-#[derive(Clone, Hash)]
+#[derive(Clone, Copy, Hash)]
 pub enum FormFieldInputType {
     Text,
     TextArea,
@@ -118,34 +118,57 @@ where
     S: Clone + ServerFn + leptos::Serializable,
     O: Clone + Serializable + 'static,
 {
-    let (blurred, set_blurred) = create_signal(cx, false);
-
     let (drawer_open, set_drawer_open) = create_signal(cx, false);
-    let open_drawer = move || {
-        set_drawer_open(true);
-        set_blurred(true);
+    let sr_title = format!("Open {} drawer", title);
+
+    let drawer = move || {
+        let title = title.clone();
+        let fields = fields.clone();
+        match drawer_open() {
+            true => {
+                view! {
+                    cx,
+                    <div id="drawer" class="overflow-y-auto fixed top-0 left-0 z-40 p-4 w-80 h-screen bg-white shadow-md -translate-x-full dark:bg-gray-800 animate-show" tabindex="-1" aria-labelledby="drawer-label">
+                        <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400">
+                            <div class="mr-2 w-5 h-5">
+                                {icon}
+                            </div>
+                            {title.clone()}
+                        </h5>
+                        <button type="button" on:click=move |_| set_drawer_open(false) data-drawer-hide="drawer-form" aria-controls="drawer-form" class="inline-flex absolute top-2.5 right-2.5 items-center p-1.5 text-sm text-gray-400 bg-transparent rounded-lg hover:text-gray-900 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" >
+                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            <span class="sr-only">"Close menu"</span>
+                        </button>
+                        <div class="mb-6">
+                            <ActionForm action=action class="mb-6">
+                                {fields}
+                                <button type="reset" onclick="form.requestSubmit()" on:click=move |_| set_drawer_open(false) class="flex justify-center items-center py-2.5 px-5 mr-2 mb-2 w-full text-sm font-medium text-white bg-blue-700 rounded-lg dark:bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    <div class="mr-2 w-5 h-5">
+                                        {icon}
+                                    </div>
+                                    {title.clone()}
+                                </button>
+                            </ActionForm>
+                        </div>
+                    </div>
+                }.into_view(cx)
+            }
+            false => {
+                view! {cx,
+                    <div>
+                    </div>
+                }.into_view(cx)
+            }
+        }
     };
-
-    let mut rng = rand::thread_rng();
-    let random_id = base64::engine::general_purpose::STANDARD
-        .encode(rng.gen::<u64>().to_le_bytes());
-
-    let close_drawer = move || {
-        set_drawer_open(false);
-        set_blurred(false);
-    };
-
-    let div_id = format!("-{}-{}", title.to_case(Case::Kebab), random_id);
-
-    let sr_title: String = format!("Open {} drawer", title);
 
     view! {
         cx,
         <div>
-            <div on:click=move |_| close_drawer() class="hidden fixed top-0 left-0 z-30 w-screen h-screen backdrop-blur-sm"  class:hidden={move || !blurred()} />
+            <div on:click=move |_| set_drawer_open(false) class="fixed top-0 left-0 z-30 w-screen h-screen transition-all pointer-events-none"  class:pointer-events-none={move || !drawer_open()} class:backdrop-blur-sm={drawer_open} />
 
             // <!-- drawer init and show -->
-            <Button on:click=move |_| open_drawer()>
+            <Button on:click=move |_| set_drawer_open(true)>
                 <div class="w-5 h-5">
                     {icon}
                 </div>
@@ -155,29 +178,7 @@ where
             </Button>
 
             // <!-- drawer component -->
-            <div id=format!("drawer-{div_id}") class="overflow-y-auto fixed top-0 left-0 z-40 p-4 w-80 h-screen bg-white shadow-md transition-transform -translate-x-full dark:bg-gray-800 blur-none" class:transform-none={drawer_open} tabindex="-1" aria-labelledby=format!("drawer-label-{div_id}")>
-                <h5 id=format!("drawer-label-{div_id}") class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400">
-                    <div class="mr-2 w-5 h-5">
-                        {icon}
-                    </div>
-                    {title.clone()}
-                </h5>
-                <button type="button" on:click=move |_| close_drawer() data-drawer-hide="drawer-form" aria-controls="drawer-form" class="inline-flex absolute top-2.5 right-2.5 items-center p-1.5 text-sm text-gray-400 bg-transparent rounded-lg hover:text-gray-900 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" >
-                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                    <span class="sr-only">"Close menu"</span>
-                </button>
-                <div class="mb-6" class:hidden={move || !drawer_open()}>
-                    <ActionForm action=action class="mb-6">
-                        {fields}
-                        <button type="reset" onclick="form.requestSubmit()" on:click=move |_| close_drawer() class="flex justify-center items-center py-2.5 px-5 mr-2 mb-2 w-full text-sm font-medium text-white bg-blue-700 rounded-lg dark:bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                            <div class="mr-2 w-5 h-5">
-                                {icon}
-                            </div>
-                            {title.clone()}
-                        </button>
-                    </ActionForm>
-                </div>
-            </div>
+            { drawer }
         </div>
     }
 }

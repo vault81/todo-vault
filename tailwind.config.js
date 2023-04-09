@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-const defaultTheme = require('tailwindcss/defaultTheme');
+const defaultTheme = require("tailwindcss/defaultTheme");
 module.exports = {
   content: [
     "./app/src/**/*.rs",
@@ -7,39 +7,48 @@ module.exports = {
     "./node_modules/flowbite/**/*.js",
   ],
   safelist: [
-    'w-64',
-    'w-1/2',
-    'rounded-l-lg',
-    'rounded-r-lg',
-    'bg-gray-200',
-    'grid-cols-4',
-    'grid-cols-7',
-    'h-6',
-    'leading-6',
-    'h-9',
-    'leading-9',
-    'shadow-lg',
+    "shadow-lg",
+    "backdrop-blur-sm",
+    "rounded-l-lg",
+    "rounded-r-lg",
+    "bg-gray-200",
+    "grid-cols-4",
+    "grid-cols-7",
+    "w-64",
+    "w-1/2",
+    "h-6",
+    "h-9",
+    "leading-6",
+    "leading-9",
   ],
   theme: {
     extend: {
+      animation: {
+        show: "show 150ms 0ms ease-in-out forwards",
+      },
+      keyframes: {
+        show: {
+          "100%": { opacity: 1, transform: "none" },
+        },
+      },
       invert: {
-        85: '.85',
-      }
+        85: ".85",
+      },
     },
   },
   variants: {
-    scale: ['responsive', 'hover', 'focus', 'group-hover'],
-    textColor: ['responsive', 'hover', 'focus', 'group-hover'],
-    opacity: ['responsive', 'hover', 'focus', 'group-hover'],
-    backgroundColor: ['responsive', 'hover', 'focus', 'group-hover'],
+    scale: ["responsive", "hover", "focus", "group-hover"],
+    textColor: ["responsive", "hover", "focus", "group-hover"],
+    opacity: ["responsive", "hover", "focus", "group-hover"],
+    backgroundColor: ["responsive", "hover", "focus", "group-hover"],
   },
-  darkMode: 'media',
+  darkMode: "media",
   corePlugins: {
     aspectRatio: false,
   },
   plugins: [
-    require('@tailwindcss/forms'),
-    require('flowbite/plugin'),
-    require('flowbite-typography'),
+    require("@tailwindcss/forms"),
+    require("flowbite/plugin"),
+    require("flowbite-typography"),
   ],
 };

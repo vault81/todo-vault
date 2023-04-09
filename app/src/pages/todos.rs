@@ -102,7 +102,7 @@ fn TodoRow(
             <td class="grid order-3 grid-cols-1 col-span-2 col-end-12 row-span-3 row-start-1 gap-6 justify-items-center justify-self-end self-center p-4 md:flex-row md:grid-cols-2 md:grid-rows-1 md:grid-rows-none md:px-2 asdasdgrid-rows-2">
                 <FormDrawerButton
                     action={edit_todo}
-                    title= "Edit Todo".to_string()
+                    title="Edit Todo".to_string()
                     icon={Svg::FileEdit}
                     fields=vec![
                         FormField {
