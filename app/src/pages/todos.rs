@@ -352,12 +352,6 @@ fn Todos(cx: Scope) -> impl IntoView {
 
 #[component]
 pub fn TodosPage(cx: Scope) -> impl IntoView {
-    create_effect(cx, move |_| {
-        setup_scroll_listener(500, 600, || process_scroll_event())
-    });
-
-    // setup_scroll_listener();
-
     view! { cx,
         <MainPage>
             <Todos/>

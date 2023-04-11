@@ -16,6 +16,7 @@ use serde::{Deserialize, Serialize};
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
+    pub list_id: Uuid,
     pub title: String,
     pub description: Option<String>,
     pub done: bool,
@@ -25,7 +26,22 @@ pub struct Model {
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+pub enum Relation {
+    #[sea_orm(
+        belongs_to = "super::lists::Entity",
+        from = "Column::ListId",
+        to = "super::lists::Column::Id",
+        on_update = "NoAction",
+        on_delete = "Cascade"
+    )]
+    Users,
+}
+
+impl Related<super::lists::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Users.def()
+    }
+}
 
 impl Model {
     pub fn calc_hash(&self) -> u64 {
@@ -39,6 +55,7 @@ impl Default for Model {
     fn default() -> Self {
         Self {
             id: uuid::Uuid::new_v4(),
+            list_id: uuid::Uuid::new_v4(),
             title: "default".to_string(),
             description: None,
             done: false,
@@ -53,12 +70,14 @@ impl ActiveModelBehavior for ActiveModel {}
 
 impl ActiveModel {
     pub fn new(
+        list_id: uuid::Uuid,
         title: String,
         description: Option<String>,
         due_date: Option<Date>,
     ) -> Self {
         Self {
             id: Set(uuid::Uuid::now_v7()),
+            list_id: Set(list_id),
             title: Set(title),
             description: Set(description),
             due_date: Set(due_date),

@@ -89,6 +89,7 @@ pub async fn list_todos(cx: Scope) -> Result<Vec<todos::Model>, ServerFnError> {
 #[server(AddTodo, "/api")]
 pub async fn add_todo(
     cx: Scope,
+    list_id: uuid::Uuid,
     title: String,
     description: Option<String>,
     due_date: Option<String>,
@@ -104,7 +105,7 @@ pub async fn add_todo(
         })
         .transpose()?;
 
-    todos::ActiveModel::new(title, description, due_date)
+    todos::ActiveModel::new(list_id, title, description, due_date)
         .insert(db.conn())
         .await
         .map_err(|e| {
