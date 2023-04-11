@@ -24,7 +24,7 @@ pub struct DbConfig {
 impl Default for DbConfig {
     fn default() -> Self {
         Self {
-            url: "sqlite://target/default.sqlite3".to_string(),
+            url: "sqlite://default.sqlite3".to_string(),
             min_connections: Some(1),
             max_connections: 16,
             connect_timeout: 5,

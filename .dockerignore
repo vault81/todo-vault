@@ -1,4 +1,5 @@
 .git/
 target/
+default.sqlite3
 Dockerfile
 docker-compose.yml
