@@ -6,7 +6,7 @@ use std::{
 };
 
 use chrono::NaiveDate;
-use sea_orm::{entity::prelude::*, Set};
+use sea_orm::{entity::prelude::*, Condition, Set};
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -89,7 +89,15 @@ impl ActiveModel {
 }
 
 impl Entity {
-    pub fn find_by_id(id: uuid::Uuid) -> Select<Entity> {
+    pub fn find_by_id(id: uuid::Uuid) -> Select<Self> {
         Self::find().filter(Column::Id.eq(id))
+    }
+
+    pub fn find_by_substring(substring: &str) -> Select<Self> {
+        let filter = Condition::any()
+            .add(Column::Title.contains(substring))
+            .add(Column::Description.contains(substring));
+
+        Self::find().filter(filter)
     }
 }

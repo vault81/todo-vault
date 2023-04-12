@@ -62,7 +62,10 @@ fn TodoRow(
     ];
 
     view! { cx,
-            <TableRow on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone()}) class="grid grid-cols-12 items-baseline rounded border md:table-row md:my-0 md:rounded-none md:border-b grid-rows-auto min-w-[20rem]">
+        <TableRow
+            on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone() })
+            class="grid grid-cols-12 items-baseline rounded border md:table-row md:my-0 md:rounded-none md:border-b grid-rows-auto min-w-[20rem]"
+        >
             <TableCell class="order-1 col-start-1 row-span-3 row-start-1 justify-self-center">
                 <div class="flex items-center">
                     <input
@@ -109,7 +112,13 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
     let edit_todo = create_server_multi_action::<EditTodo>(cx);
     let trash_todo = create_server_action::<TrashTodo>(cx);
     let toggle_todo = create_server_action::<ToggleTodo>(cx);
+    let list_resource = create_resource(
+        cx,
+        move || (list_id,),
+        move |_| async move { find_list(cx, list_id).await },
+    );
 
+    let (search, set_search) = create_signal(cx, "".to_string());
     let list_todos_resource = create_resource(
         cx,
         move || {
@@ -118,16 +127,15 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                 edit_todo.version().get(),
                 trash_todo.version().get(),
                 toggle_todo.version().get(),
+                search(),
                 list_id,
             )
         },
-        move |_| async move { list_todos(cx, list_id).await.unwrap_or_default() },
-    );
-
-    let list_resource = create_resource(
-        cx,
-        move || (list_id,),
-        move |_| async move { find_list(cx, list_id).await },
+        move |_| async move {
+            list_todos(cx, list_id, Some(search()), None)
+                .await
+                .unwrap_or_default()
+        },
     );
 
     // let list_todos_fn = move || list_todos_resource.read(cx);
@@ -227,6 +235,10 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                             id="table-search"
                             class="block p-2 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-orange-500 focus:ring-orange-500 min-w-[7em]"
                             placeholder="Search"
+                            on:input=move |ev| {
+                                set_search(event_target_value(&ev));
+                            }
+                            prop:value=search
                         />
                     </div>
                 </div>

@@ -51,7 +51,6 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
             let cx = cx.clone();
             let add_list_p = add_list_p.clone();
             async move {
-                tracing::info!("add_list_p: {:?}", add_list_p);
                 let list = add_list(cx, add_list_p.title).await?;
                 add_to_local_storage(list.id);
                 Ok(())

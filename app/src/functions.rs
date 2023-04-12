@@ -9,16 +9,21 @@ use broadcaster::BroadcastChannel;
 use entity::{
     chrono::NaiveDate,
     lists,
+    prelude::*,
     sea_orm::{
         entity::ActiveModelTrait,
         query::QueryOrder,
+        ColumnTrait,
         EntityTrait,
         ModelTrait,
+        QueryFilter,
+        Select,
     },
     todos,
     uuid,
 };
 use leptos::*;
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 #[cfg(feature = "ssr")]
@@ -110,10 +115,24 @@ pub async fn find_list(
     Ok(list.unwrap())
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum Order {
+    Asc,
+    Desc,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum TodoOrderBy {
+    Title(Order),
+    DueDate(Order),
+}
+
 #[server(ListTodos, "/api")]
 pub async fn list_todos(
     cx: Scope,
     list_id: uuid::Uuid,
+    search: Option<String>,
+    order_by: Option<TodoOrderBy>,
 ) -> Result<Vec<todos::Model>, ServerFnError> {
     let db = db(cx)?;
 
@@ -126,9 +145,19 @@ pub async fn list_todos(
         return Err(ServerFnError::ServerError("No list found".to_string()));
     }
 
-    let todos = list
-        .unwrap()
-        .find_related(todos::Entity)
+    let todos = list.unwrap().find_related(todos::Entity);
+
+    let todos = if let Some(search) = search {
+        let filter = entity::sea_orm::Condition::any()
+            .add(todos::Column::Title.contains(&search))
+            .add(todos::Column::Description.contains(&search));
+
+        todos.filter(filter)
+    } else {
+        todos
+    };
+
+    let todos = todos
         .order_by_asc(todos::Column::CreatedAt)
         .all(db.conn())
         .await
@@ -232,9 +261,6 @@ pub async fn toggle_todo(
     id: uuid::Uuid,
 ) -> Result<(), ServerFnError> {
     let db = db(cx)?;
-    // let uuid = entity::uuid::Uuid::parse_str(&id)
-    //     .map_err(|_| ServerFnError::ServerError("Invalid UUID".to_string()))?;
-
     let mut updated: todos::ActiveModel = todos::Entity::find_by_id(id)
         .one(db.conn())
         .await

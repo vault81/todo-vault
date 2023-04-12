@@ -35,15 +35,15 @@ impl IntoView for ColumnHeader {
     fn into_view(self, cx: Scope) -> View {
         match self.width {
             Some(width) => view! { cx,
-                <th id=self.id scope="col" class=format!("p-3 md:p-4 w-{}", width)>
-                    {self.label}
-                </th>
-            },
+                               <th id=self.id scope="col" class=format!("p-3 md:p-4 w-{}", width)>
+                                   {self.label}
+                               </th>
+                           },
             None => view! { cx,
-                <th id=self.id scope="col" class="p-3 md:p-4">
-                    {self.label}
-                </th>
-            },
+                        <th id=self.id scope="col" class="p-3 md:p-4">
+                            {self.label}
+                        </th>
+                    },
         }.into_view(cx)
     }
 }
@@ -58,9 +58,7 @@ pub fn Table(
     view! { cx,
         <table class="w-full text-left text-gray-500 table-fixed dark:text-gray-400">
             <thead class="hidden text-gray-700 uppercase bg-gray-50 md:table-header-group dark:text-gray-400 dark:bg-gray-700">
-                <tr>
-                    {column_headers}
-                </tr>
+                <tr>{column_headers}</tr>
             </thead>
             <tbody>{children(cx)}</tbody>
         </table>
