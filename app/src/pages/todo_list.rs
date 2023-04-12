@@ -62,11 +62,11 @@ fn TodoRow(
     ];
 
     view! { cx,
-        <TableRow
-            on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone() })
-            class="grid grid-cols-12 items-baseline rounded border md:table-row md:my-0 md:rounded-none md:border-b grid-rows-auto min-w-[20rem]"
-        >
-            <TableCell class="order-1 col-start-1 row-span-3 row-start-1 justify-self-center">
+        <TableRow class="grid grid-cols-12 items-baseline rounded border md:table-row md:my-0 md:rounded-none md:border-b grid-rows-auto min-w-[20rem]">
+            <TableCell
+                on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone() })
+                class="order-1 col-start-1 row-span-3 row-start-1 justify-self-center pointer-events-auto"
+            >
                 <div class="flex items-center">
                     <input
                         type="checkbox"
@@ -75,20 +75,29 @@ fn TodoRow(
                     />
                 </div>
             </TableCell>
-            <TableCell class="order-2 col-span-8 col-start-2 row-start-1 p-4 min-w-0 text-lg font-medium text-gray-900 md:text-base dark:text-white truncate">
+            <TableCell
+                on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone() })
+                class="order-2 col-span-8 col-start-2 row-start-1 p-4 min-w-0 text-lg font-medium text-gray-900 pointer-events-auto md:text-base dark:text-white truncate"
+            >
                 {todo.title.clone()}
             </TableCell>
-            <TableCell class="overflow-y-auto overflow-x-hidden order-4 col-span-8 col-start-2 row-start-2 p-4 min-w-0 min-h-0 max-h-64 whitespace-pre text-ellipsis md:truncate">
+            <TableCell
+                on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone() })
+                class="overflow-y-auto overflow-x-hidden order-4 col-span-8 col-start-2 row-start-2 p-4 min-w-0 min-h-0 max-h-64 whitespace-pre pointer-events-auto text-ellipsis md:truncate"
+            >
                 {todo.description.clone()}
             </TableCell>
-            <TableCell class="order-5 col-span-8 col-start-2 row-start-3 p-4">
+            <TableCell
+                on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone() })
+                class="order-5 col-span-8 col-start-2 row-start-3 p-4 pointer-events-auto"
+            >
                 <div class="inline md:hidden">"Due Date: "</div>
                 {todo
                     .due_date
                     .map(|dd| dd.format("%d.%m.%Y").to_string())
                     .unwrap_or_else(|| "".to_string())}
             </TableCell>
-            <TableCell class="grid order-3 grid-cols-1 col-span-2 col-end-12 grid-rows-2 row-span-3 row-start-1 gap-6 justify-items-center justify-self-end self-center p-4 md:flex-row md:grid-cols-2 md:grid-rows-1 md:grid-rows-none md:px-2">
+            <TableCell class="grid order-3 grid-cols-1 col-span-2 col-end-12 grid-rows-2 row-span-3 row-start-1 gap-6 justify-items-center justify-self-end self-center p-4 pointer-events-auto md:flex-row md:grid-cols-2 md:grid-rows-1 md:grid-rows-none md:px-2">
                 <FormDrawerButton
                     action=edit_todo
                     title="Edit Todo".to_string()
@@ -107,39 +116,11 @@ fn TodoRow(
 }
 
 #[component]
-fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
-    let create_todo = create_server_multi_action::<AddTodo>(cx);
-    let edit_todo = create_server_multi_action::<EditTodo>(cx);
-    let trash_todo = create_server_action::<TrashTodo>(cx);
-    let toggle_todo = create_server_action::<ToggleTodo>(cx);
-    let list_resource = create_resource(
-        cx,
-        move || (list_id,),
-        move |_| async move { find_list(cx, list_id).await },
-    );
-
-    let (search, set_search) = create_signal(cx, "".to_string());
-    let list_todos_resource = create_resource(
-        cx,
-        move || {
-            (
-                create_todo.version().get(),
-                edit_todo.version().get(),
-                trash_todo.version().get(),
-                toggle_todo.version().get(),
-                search(),
-                list_id,
-            )
-        },
-        move |_| async move {
-            list_todos(cx, list_id, Some(search()), None)
-                .await
-                .unwrap_or_default()
-        },
-    );
-
-    // let list_todos_fn = move || list_todos_resource.read(cx);
-
+fn AddTodoDrawer(
+    cx: Scope,
+    list_id: uuid::Uuid,
+    add_todo: MultiAction<AddTodo, Result<(), ServerFnError>>,
+) -> impl IntoView {
     let add_todo_fields = vec![
         FormField {
             id: "list_id".to_string(),
@@ -174,6 +155,48 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
             required: false,
         },
     ];
+
+    view! { cx,
+        <FormDrawerButton
+            action=add_todo
+            title="Add Todo".to_string()
+            icon=Svg::FilePlus
+            fields=add_todo_fields
+        />
+    }
+}
+
+#[component]
+fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
+    let add_todo = create_server_multi_action::<AddTodo>(cx);
+    let edit_todo = create_server_multi_action::<EditTodo>(cx);
+    let trash_todo = create_server_action::<TrashTodo>(cx);
+    let toggle_todo = create_server_action::<ToggleTodo>(cx);
+    let list_resource = create_resource(
+        cx,
+        move || (list_id,),
+        move |_| async move { find_list(cx, list_id).await },
+    );
+
+    let (search, set_search) = create_signal(cx, "".to_string());
+    let list_todos_resource = create_resource(
+        cx,
+        move || {
+            (
+                add_todo.version().get(),
+                edit_todo.version().get(),
+                trash_todo.version().get(),
+                toggle_todo.version().get(),
+                search(),
+                list_id,
+            )
+        },
+        move |_| async move {
+            list_todos(cx, list_id, Some(search()), None)
+                .await
+                .unwrap_or_default()
+        },
+    );
 
     let column_headers = vec![
         ColumnHeader {
@@ -217,16 +240,11 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
             </Transition>
             <div class="overflow-x-auto relative border-0 border-gray-200 shadow-md md:rounded-lg md:border dark:border-gray-700">
                 <div class="flex justify-between items-center p-2">
-                    <FormDrawerButton
-                        action=create_todo
-                        title="Add Todo".to_string()
-                        icon=Svg::FilePlus
-                        fields=add_todo_fields
-                    />
-                    <label for="table-search" class="sr-only">
-                        "Search"
-                    </label>
+                    <AddTodoDrawer list_id=list_id add_todo=add_todo/>
                     <div class="relative">
+                        <label for="table-search" class="sr-only">
+                            "Search"
+                        </label>
                         <div class="absolute left-0 top-2 items-center pl-3 pointer-events-none">
                             <div class="w-5 h-5">{Svg::Search}</div>
                         </div>

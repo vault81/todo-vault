@@ -1,4 +1,4 @@
-# Todo Vault API
+# Todo Vault
 
 ## Overview
 

@@ -160,6 +160,7 @@ pub fn FormDrawerButton<S, O>(
     title: String,
     action: MultiAction<S, Result<O, ServerFnError>>,
     fields: Vec<FormField>,
+    #[prop(optional, into)] class: String,
 ) -> impl IntoView
 where
     S: Clone + ServerFn + leptos::Serializable,
@@ -240,7 +241,7 @@ where
                 class:pointer-events-none=move || !drawer_open()
                 class:backdrop-blur-sm=drawer_open
             ></div>
-            <Button on:click=move |_| set_drawer_open(true)>
+            <Button class=class on:click=move |_| set_drawer_open(true)>
                 <div class="w-5 h-5">{icon}</div>
                 <span class="sr-only">{sr_title}</span>
             </Button>
