@@ -79,23 +79,25 @@ fn TodoRow(
                 on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone() })
                 class="order-2 col-span-8 col-start-2 row-start-1 p-4 min-w-0 text-lg font-medium text-gray-900 pointer-events-auto md:text-base dark:text-white truncate"
             >
-                {todo.title.clone()}
+                <span onclick="event.cancelBubble = true;">{todo.title.clone()}</span>
             </TableCell>
             <TableCell
                 on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone() })
                 class="overflow-y-auto overflow-x-hidden order-4 col-span-8 col-start-2 row-start-2 p-4 min-w-0 min-h-0 max-h-64 whitespace-pre pointer-events-auto text-ellipsis md:truncate"
             >
-                {todo.description.clone()}
+                <span onclick="event.cancelBubble = true;">{todo.description.clone()}</span>
             </TableCell>
             <TableCell
                 on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone() })
                 class="order-5 col-span-8 col-start-2 row-start-3 p-4 pointer-events-auto"
             >
-                <div class="inline md:hidden">"Due Date: "</div>
-                {todo
-                    .due_date
-                    .map(|dd| dd.format("%d.%m.%Y").to_string())
-                    .unwrap_or_else(|| "".to_string())}
+                <span onclick="event.cancelBubble = true;">
+                    <span class="md:hidden">"Due Date: "</span>
+                    {todo
+                        .due_date
+                        .map(|dd| dd.format("%d.%m.%Y").to_string())
+                        .unwrap_or_else(|| "".to_string())}
+                </span>
             </TableCell>
             <TableCell class="grid order-3 grid-cols-1 col-span-2 col-end-12 grid-rows-2 row-span-3 row-start-1 gap-6 justify-items-center justify-self-end self-center p-4 pointer-events-auto md:flex-row md:grid-cols-2 md:grid-rows-1 md:grid-rows-none md:px-2">
                 <FormDrawerButton
@@ -201,29 +203,34 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
 
     let column_headers = vec![
         ColumnHeader {
-            id:    "checkbox".to_string(),
-            label: "".to_string(),
-            width: Some(4),
+            id:     "checkbox".to_string(),
+            label:  "".to_string(),
+            width:  Some(4),
+            center: false,
         },
         ColumnHeader {
-            id:    "title".to_string(),
-            label: "Title".to_string(),
-            width: None,
+            id:     "title".to_string(),
+            label:  "Title".to_string(),
+            width:  None,
+            center: false,
         },
         ColumnHeader {
-            id:    "description".to_string(),
-            label: "Description".to_string(),
-            width: None,
+            id:     "description".to_string(),
+            label:  "Description".to_string(),
+            width:  None,
+            center: false,
         },
         ColumnHeader {
-            id:    "due_date".to_string(),
-            label: "Due Date".to_string(),
-            width: Some(16),
+            id:     "due_date".to_string(),
+            label:  "Due Date".to_string(),
+            width:  Some(16),
+            center: false,
         },
         ColumnHeader {
-            id:    "action".to_string(),
-            label: "Action".to_string(),
-            width: Some(48),
+            id:     "action".to_string(),
+            label:  "Action".to_string(),
+            width:  Some(48),
+            center: true,
         },
     ];
 
@@ -286,7 +293,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                         <label for="table-search" class="sr-only">
                             "Search"
                         </label>
-                        <div class="absolute left-0 top-2 items-center pl-3 pointer-events-none">
+                        <div class="absolute left-0 top-2 items-center pl-3 text-gray-400 pointer-events-none">
                             <div class="w-5 h-5">{Svg::Search}</div>
                         </div>
                         <input

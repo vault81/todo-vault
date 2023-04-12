@@ -31,21 +31,22 @@ pub fn TableRow(
 
 #[derive(Clone, Debug)]
 pub struct ColumnHeader {
-    pub id:    String,
-    pub label: String,
-    pub width: Option<u32>,
+    pub id:     String,
+    pub label:  String,
+    pub width:  Option<u32>,
+    pub center: bool,
 }
 
 impl IntoView for ColumnHeader {
     fn into_view(self, cx: Scope) -> View {
         match self.width {
             Some(width) => view! { cx,
-                               <th id=self.id scope="col" class=format!("p-3 md:p-4 w-{}", width)>
+                               <th id=self.id scope="col" class=format!("p-3 md:p-4 w-{}", width) class:text-center=move || self.center>
                                    {self.label}
                                </th>
                            },
             None => view! { cx,
-                        <th id=self.id scope="col" class="p-3 md:p-4">
+                        <th id=self.id scope="col" class="p-3 md:p-4" class:text-center=move || self.center>
                             {self.label}
                         </th>
                     },

@@ -121,14 +121,16 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
 
     let column_headers = vec![
         ColumnHeader {
-            id:    "title".to_string(),
-            label: "Title".to_string(),
-            width: None,
+            id:     "title".to_string(),
+            label:  "Title".to_string(),
+            width:  None,
+            center: false,
         },
         ColumnHeader {
-            id:    "actions".to_string(),
-            label: "".to_string(),
-            width: Some(24),
+            id:     "actions".to_string(),
+            label:  "".to_string(),
+            width:  Some(24),
+            center: false,
         },
     ];
 
@@ -159,10 +161,10 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
     view! { cx,
         <MainPage>
             <h1 class="mb-4 text-2xl font-semibold text-gray-900 dark:text-white">
-                "My to-do lists"
+                "My To-Do Lists"
             </h1>
-            <div class="overflow-x-auto relative border-0 border-gray-200 shadow-md md:rounded-lg md:border dark:border-gray-700">
-                <div class="flex justify-between items-center p-2">
+            <div class="overflow-x-auto relative rounded-lg border border-gray-200 shadow-md dark:border-gray-700">
+                <div class="flex justify-between items-center p-2 border-b border-gray-200 md:border-none dark:border-gray-700">
                     <FormDrawerButton
                         action=add_list_action
                         title="Add List".to_string()
@@ -179,11 +181,13 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
                         key=|list| list.id
                         view=move |cx, list: entity::lists::Model| {
                             view! { cx,
-                                <TableRow>
+                                <TableRow class="border-b">
                                     <TableCell on:click=move |_| {
                                         utils::set_href(format!("/todo/{}", list.id));
-                                    }>{list.title}</TableCell>
-                                    <TableCell>
+                                    }>
+                                        <span onclick="event.cancelBubble = true;">{list.title}</span>
+                                    </TableCell>
+                                    <TableCell class="w-24">
                                         <MultiActionForm action=delete_list_action>
                                             <input type="hidden" name="list_id" value=move || list.id.to_string()/>
                                             <Button class="border-none" b_type="submit">
