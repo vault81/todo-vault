@@ -20,6 +20,7 @@ fn TodoRow(
     cx: Scope,
     todo: todos::Model,
     trash_todo: Action<TrashTodo, Result<(), ServerFnError>>,
+    toggle_todo: Action<ToggleTodo, Result<(), ServerFnError>>,
     edit_todo: MultiAction<EditTodo, Result<(), ServerFnError>>,
 ) -> impl IntoView {
     let edit_todo_fields = vec![
@@ -61,11 +62,12 @@ fn TodoRow(
     ];
 
     view! { cx,
-        <TableRow class="grid grid-cols-12 items-baseline rounded border md:table-row md:my-0 md:rounded-none md:border-b grid-rows-auto min-w-[20rem]">
+            <TableRow on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone()}) class="grid grid-cols-12 items-baseline rounded border md:table-row md:my-0 md:rounded-none md:border-b grid-rows-auto min-w-[20rem]">
             <TableCell class="order-1 col-start-1 row-span-3 row-start-1 justify-self-center">
                 <div class="flex items-center">
                     <input
                         type="checkbox"
+                        checked=todo.done
                         class="w-4 h-4 text-orange-600 bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:ring-offset-gray-800 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 dark:focus:ring-offset-gray-800"
                     />
                 </div>
@@ -106,6 +108,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
     let create_todo = create_server_multi_action::<AddTodo>(cx);
     let edit_todo = create_server_multi_action::<EditTodo>(cx);
     let trash_todo = create_server_action::<TrashTodo>(cx);
+    let toggle_todo = create_server_action::<ToggleTodo>(cx);
 
     let list_todos_resource = create_resource(
         cx,
@@ -114,6 +117,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                 create_todo.version().get(),
                 edit_todo.version().get(),
                 trash_todo.version().get(),
+                toggle_todo.version().get(),
                 list_id,
             )
         },
@@ -182,7 +186,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
         ColumnHeader {
             id:    "due_date".to_string(),
             label: "Due Date".to_string(),
-            width: None,
+            width: Some(16),
         },
         ColumnHeader {
             id:    "action".to_string(),
@@ -234,7 +238,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                             each=move || list_todos_resource.read(cx).unwrap_or(vec![])
                             key=|todo| todo.calc_hash()
                             view=move |cx, todo: todos::Model| {
-                                view! { cx, <TodoRow todo=todo trash_todo=trash_todo edit_todo=edit_todo/> }
+                                view! { cx, <TodoRow todo=todo toggle_todo=toggle_todo trash_todo=trash_todo edit_todo=edit_todo/> }
                             }
                         />
                     </Table>

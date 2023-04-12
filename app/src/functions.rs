@@ -227,12 +227,15 @@ pub async fn edit_todo(
 }
 
 #[server(ToggleTodo, "/api")]
-pub async fn toggle_todo(cx: Scope, id: String) -> Result<(), ServerFnError> {
+pub async fn toggle_todo(
+    cx: Scope,
+    id: uuid::Uuid,
+) -> Result<(), ServerFnError> {
     let db = db(cx)?;
-    let uuid = entity::uuid::Uuid::parse_str(&id)
-        .map_err(|_| ServerFnError::ServerError("Invalid UUID".to_string()))?;
+    // let uuid = entity::uuid::Uuid::parse_str(&id)
+    //     .map_err(|_| ServerFnError::ServerError("Invalid UUID".to_string()))?;
 
-    let mut updated: todos::ActiveModel = todos::Entity::find_by_id(uuid)
+    let mut updated: todos::ActiveModel = todos::Entity::find_by_id(id)
         .one(db.conn())
         .await
         .map_err(|_| ServerFnError::ServerError("No todo found".to_string()))?
