@@ -19,7 +19,7 @@ use crate::{components::*, functions::*, utils::*};
 fn TodoRow(
     cx: Scope,
     todo: todos::Model,
-    trash_todo: Action<TrashTodo, Result<(), ServerFnError>>,
+    delete_todo: Action<DeleteTodo, Result<(), ServerFnError>>,
     toggle_todo: Action<ToggleTodo, Result<(), ServerFnError>>,
     edit_todo: MultiAction<EditTodo, Result<(), ServerFnError>>,
 ) -> impl IntoView {
@@ -99,14 +99,15 @@ fn TodoRow(
             </TableCell>
             <TableCell class="grid order-3 grid-cols-1 col-span-2 col-end-12 grid-rows-2 row-span-3 row-start-1 gap-6 justify-items-center justify-self-end self-center p-4 pointer-events-auto md:flex-row md:grid-cols-2 md:grid-rows-1 md:grid-rows-none md:px-2">
                 <FormDrawerButton
+                    class="border-none"
                     action=edit_todo
                     title="Edit To-Do".to_string()
                     icon=Svg::FileEdit
                     fields=edit_todo_fields
                 />
-                <ActionForm action=trash_todo>
+                <ActionForm action=delete_todo>
                     <input type="hidden" name="id" value=move || todo.id.to_string()/>
-                    <Button b_type="submit">
+                    <Button class="border-none" b_type="submit">
                         <div class="w-5 h-5">{Svg::Trash2}</div>
                     </Button>
                 </ActionForm>
@@ -170,7 +171,7 @@ fn AddTodoDrawer(
 fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
     let add_todo = create_server_multi_action::<AddTodo>(cx);
     let edit_todo = create_server_multi_action::<EditTodo>(cx);
-    let trash_todo = create_server_action::<TrashTodo>(cx);
+    let delete_todo = create_server_action::<DeleteTodo>(cx);
     let toggle_todo = create_server_action::<ToggleTodo>(cx);
     let list_resource = create_resource(
         cx,
@@ -185,7 +186,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
             (
                 add_todo.version().get(),
                 edit_todo.version().get(),
-                trash_todo.version().get(),
+                delete_todo.version().get(),
                 toggle_todo.version().get(),
                 search(),
                 list_id,
@@ -309,7 +310,9 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                             each=move || list_todos_resource.read(cx).unwrap_or(vec![])
                             key=|todo| todo.calc_hash()
                             view=move |cx, todo: todos::Model| {
-                                view! { cx, <TodoRow todo=todo toggle_todo=toggle_todo trash_todo=trash_todo edit_todo=edit_todo/> }
+                                view! { cx,
+                                    <TodoRow todo=todo toggle_todo=toggle_todo delete_todo=delete_todo edit_todo=edit_todo/>
+                                }
                             }
                         />
                     </Table>

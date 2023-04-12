@@ -1,5 +1,7 @@
 use entity::uuid;
 use leptos::*;
+use leptos_dom::*;
+use leptos_router::*;
 
 use crate::{components::*, functions::*, utils};
 
@@ -42,9 +44,35 @@ pub fn add_to_local_storage(list_id: uuid::Uuid) {
     }
 }
 
+pub fn remove_from_local_storage(list_id: uuid::Uuid) {
+    let storage = window().local_storage();
+
+    if let Ok(Some(storage)) = storage {
+        let mut list_ids = retrieve_from_local_storage();
+        if !list_ids.contains(&list_id) {
+            return;
+        }
+        list_ids.retain(|id| id != &list_id);
+        let list_ids = serde_json::to_string(&list_ids).unwrap();
+        storage.set_item(STORAGE_KEY, &list_ids).unwrap();
+    }
+}
+
 #[component]
 pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
     tracing::info!("MyTodoListsPage");
+
+    let delete_list_action =
+        create_multi_action(cx.clone(), move |delete_list_p: &DeleteList| {
+            let cx = cx.clone();
+            let delete_list_p = delete_list_p.clone();
+            async move {
+                remove_from_local_storage(delete_list_p.list_id);
+                delete_list(cx, delete_list_p.list_id).await?;
+                Ok(())
+            }
+        })
+        .using_server_fn::<DeleteList>();
 
     let add_list_action =
         create_multi_action(cx, move |add_list_p: &AddList| {
@@ -67,8 +95,15 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
         required: true,
     }];
 
-    let my_lists =
-        create_local_resource(cx, add_list_action.version(), move |_| {
+    let my_lists = create_local_resource(
+        cx,
+        move || {
+            (
+                add_list_action.version().get(),
+                delete_list_action.version().get(),
+            )
+        },
+        move |_| {
             let cx = cx.clone();
             async move {
                 let list_ids = retrieve_from_local_storage();
@@ -81,31 +116,39 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
                     lists.into_iter().filter_map(Result::ok).collect();
                 lists
             }
-        });
+        },
+    );
 
-    let column_headers = vec![ColumnHeader {
-        id:    "title".to_string(),
-        label: "Title".to_string(),
-        width: None,
-    }];
+    let column_headers = vec![
+        ColumnHeader {
+            id:    "title".to_string(),
+            label: "Title".to_string(),
+            width: None,
+        },
+        ColumnHeader {
+            id:    "actions".to_string(),
+            label: "".to_string(),
+            width: Some(24),
+        },
+    ];
 
     let no_lists_row = move || {
         let lists = my_lists.read(cx);
         if lists.is_none() || lists.unwrap_or(vec![]).is_empty() {
             view! { cx,
-                    <TableRow>
-                        <TableCell>
-                            <div class="flex justify-center items-center">
-                                <div class="flex text-gray-500 dark:text-gray-400">
-                                    <div class="w-6 h-6">{Svg::AlertCircle}</div>
-                                    <span class="ml-2">
-                                        "No lists found. "
-                                        "Click the button on the top left of this panel to add a list."
-                                    </span>
-                                </div>
+                <TableRow>
+                    <TableCell colspan=2>
+                        <div class="flex justify-center items-center">
+                            <div class="flex text-gray-500 dark:text-gray-400">
+                                <div class="w-6 h-6">{Svg::AlertCircle}</div>
+                                <span class="ml-2">
+                                    "No lists found. "
+                                    "Click the button on the top left of this panel to add a list."
+                                </span>
                             </div>
-                        </TableCell>
-                    </TableRow>
+                        </div>
+                    </TableCell>
+                </TableRow>
             }
             .into_view(cx)
         } else {
@@ -130,18 +173,24 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
                 <Table column_headers=column_headers>
                     <Transition fallback=move || {
                         view! { cx, <></> }
-                    }>
-                        {no_lists_row()}
-                    </Transition>
+                    }>{no_lists_row()}</Transition>
                     <For
                         each=move || my_lists.read(cx).unwrap_or(vec![])
                         key=|list| list.id
                         view=move |cx, list: entity::lists::Model| {
                             view! { cx,
-                                <TableRow on:click=move |_| {
-                                    utils::set_href(format!("/todo/{}", list.id));
-                                }>
-                                    <TableCell>{list.title}</TableCell>
+                                <TableRow>
+                                    <TableCell on:click=move |_| {
+                                        utils::set_href(format!("/todo/{}", list.id));
+                                    }>{list.title}</TableCell>
+                                    <TableCell>
+                                        <MultiActionForm action=delete_list_action>
+                                            <input type="hidden" name="list_id" value=move || list.id.to_string()/>
+                                            <Button class="border-none" b_type="submit">
+                                                <div class="w-5 h-5">{Svg::Trash2}</div>
+                                            </Button>
+                                        </MultiActionForm>
+                                    </TableCell>
                                 </TableRow>
                             }
                         }

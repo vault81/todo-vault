@@ -33,9 +33,10 @@ pub fn register_server_functions() -> Result<(), ServerFnError> {
     ClearServerCount::register()?;
     AddList::register()?;
     FindList::register()?;
+    DeleteList::register()?;
     AddTodo::register()?;
     ListTodos::register()?;
-    TrashTodo::register()?;
+    DeleteTodo::register()?;
     EditTodo::register()?;
     ToggleTodo::register()?;
     Ok(())
@@ -113,6 +114,29 @@ pub async fn find_list(
     }
 
     Ok(list.unwrap())
+}
+
+#[server(DeleteList, "/api")]
+pub async fn delete_list(
+    cx: Scope,
+    list_id: uuid::Uuid,
+) -> Result<(), ServerFnError> {
+    let db = db(cx)?;
+
+    let list = lists::Entity::find_by_id(list_id)
+        .one(db.conn())
+        .await
+        .map_err(|e| ServerFnError::ServerError(format!("{e}")))?;
+
+    if list.is_none() {
+        return Err(ServerFnError::ServerError("No list found".to_string()));
+    }
+
+    list.unwrap().delete(db.conn()).await.map_err(|_| {
+        ServerFnError::ServerError("No list deleted".to_string())
+    })?;
+
+    Ok(())
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -199,8 +223,8 @@ pub async fn add_todo(
     Ok(())
 }
 
-#[server(TrashTodo, "/api")]
-pub async fn trash_todo(
+#[server(DeleteTodo, "/api")]
+pub async fn delete_todo(
     cx: Scope,
     id: uuid::Uuid,
 ) -> Result<(), ServerFnError> {
