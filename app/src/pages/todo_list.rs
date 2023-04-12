@@ -226,6 +226,46 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
         },
     ];
 
+    let no_todos_row = move || {
+        if list_todos_resource.read(cx).unwrap_or_default().is_empty() {
+            if search().is_empty() {
+                view! { cx,
+                    <TableRow>
+                        <TableCell colspan=5 class="col-span-5 text-center">
+                            <div class="flex justify-center items-center">
+                                <div class="flex text-gray-500 dark:text-gray-400">
+                                    <div class="w-6 h-6">{Svg::AlertCircle}</div>
+                                    <span class="ml-2">
+                                        "No todos found. Click the button on the top left to add a new todo."
+                                    </span>
+                                </div>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                }.into_view(cx)
+            } else {
+                view! { cx,
+                    <TableRow>
+                        <TableCell colspan=5 class="col-span-5 text-center">
+                            <div class="flex justify-center items-center">
+                                <div class="flex text-gray-500 dark:text-gray-400">
+                                    <div class="w-6 h-6">{Svg::AlertCircle}</div>
+                                    <span class="ml-2">
+                                        "No todos found for the search term: "
+                                        <span class="font-semibold">{search()}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                }
+                .into_view(cx)
+            }
+        } else {
+            view! { cx, <></> }.into_view(cx)
+        }
+    };
+
     view! { cx,
         <>
             <Transition fallback=move || {
@@ -264,6 +304,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                     view! { cx, <tr class="bg-red-700">"Loading..."</tr> }
                 }>
                     <Table column_headers=column_headers.clone()>
+                        {no_todos_row()}
                         <For
                             each=move || list_todos_resource.read(cx).unwrap_or(vec![])
                             key=|todo| todo.calc_hash()

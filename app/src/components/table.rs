@@ -7,8 +7,13 @@ pub fn TableCell(
     cx: Scope,
     children: Children,
     #[prop(optional, into)] class: String,
+    #[prop(optional, into)] colspan: i32,
 ) -> impl IntoView {
-    view! { cx, <td class=format!("p-3 md:p-4 {class}")>{children(cx)}</td> }
+    view! { cx,
+        <td class=format!("p-3 md:p-4 {class}") colspan=colspan>
+            {children(cx)}
+        </td>
+    }
 }
 
 #[component]

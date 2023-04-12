@@ -89,6 +89,30 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
         width: None,
     }];
 
+    let no_lists_row = move || {
+        let lists = my_lists.read(cx);
+        if lists.is_none() || lists.unwrap_or(vec![]).is_empty() {
+            view! { cx,
+                    <TableRow>
+                        <TableCell>
+                            <div class="flex justify-center items-center">
+                                <div class="flex text-gray-500 dark:text-gray-400">
+                                    <div class="w-6 h-6">{Svg::AlertCircle}</div>
+                                    <span class="ml-2">
+                                        "No lists found. "
+                                        "Click the button on the top left of this panel to add a list."
+                                    </span>
+                                </div>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+            }
+            .into_view(cx)
+        } else {
+            view! { cx, <></> }.into_view(cx)
+        }
+    };
+
     view! { cx,
         <MainPage>
             <h1 class="mb-4 text-2xl font-semibold text-gray-900 dark:text-white">
@@ -104,6 +128,11 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
                     />
                 </div>
                 <Table column_headers=column_headers>
+                    <Transition fallback=move || {
+                        view! { cx, <></> }
+                    }>
+                        {no_lists_row()}
+                    </Transition>
                     <For
                         each=move || my_lists.read(cx).unwrap_or(vec![])
                         key=|list| list.id
