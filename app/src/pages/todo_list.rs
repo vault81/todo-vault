@@ -61,7 +61,7 @@ fn TodoRow(
     ];
 
     view! { cx,
-        <TableRow class="grid-cols-12 items-baseline rounded border md:table-row md:my-0 md:rounded-none md:border-b grid-rows-auto min-w-[20rem]">
+        <TableRow class="grid grid-cols-12 items-baseline rounded border md:table-row md:my-0 md:rounded-none md:border-b grid-rows-auto min-w-[20rem]">
             <TableCell class="order-1 col-start-1 row-span-3 row-start-1 justify-self-center">
                 <div class="flex items-center">
                     <input
@@ -73,7 +73,7 @@ fn TodoRow(
             <TableCell class="order-2 col-span-8 col-start-2 row-start-1 p-4 min-w-0 text-lg font-medium text-gray-900 md:text-base dark:text-white truncate">
                 {todo.title.clone()}
             </TableCell>
-            <TableCell class="overflow-auto order-4 col-span-8 col-start-2 row-start-2 p-4 min-w-0 min-h-0 max-h-64 whitespace-pre text-ellipsis md:truncate">
+            <TableCell class="overflow-y-auto overflow-x-hidden order-4 col-span-8 col-start-2 row-start-2 p-4 min-w-0 min-h-0 max-h-64 whitespace-pre text-ellipsis md:truncate">
                 {todo.description.clone()}
             </TableCell>
             <TableCell class="order-5 col-span-8 col-start-2 row-start-3 p-4">
@@ -167,7 +167,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
         ColumnHeader {
             id:    "checkbox".to_string(),
             label: "".to_string(),
-            width: Some(2),
+            width: Some(4),
         },
         ColumnHeader {
             id:    "title".to_string(),
@@ -187,7 +187,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
         ColumnHeader {
             id:    "action".to_string(),
             label: "Action".to_string(),
-            width: Some(8),
+            width: Some(48),
         },
     ];
 
