@@ -6,32 +6,34 @@ use crate::components::*;
 pub fn AboutPage(cx: Scope) -> impl IntoView {
     view! { cx,
         <MainPage>
-            <article class="format lg:format-lg dark:invert">
-                <h1>"TodoVault"</h1>
+            <article class="max-w-none format format-orange lg:format-lg dark:invert">
+                <h2>"TodoVault: Your Privacy-Focused To-Do List Solution"</h2>
                 <p>
-                    "Todo Vault is a free & open source Web-Application to securly store your ToDos and colloborate on them."
+                    "TodoVault is a free and open-source web application designed to manage your to-do lists and facilitate collaboration with others. Our goal is to offer an easy-to-use, self-hosted alternative to popular to-do list applications like Google Keep and Microsoft To-Do, while prioritizing privacy and security."
                 </p>
-                <h4>"The basic feature set planned for the first alpha release is:"</h4>
+                <p>
+                    "Though our current feature set is limited, we are working diligently to develop a comprehensive to-do list solution that meets the needs of individuals and teams alike."
+                </p>
+                <h4>" Key Features of Our Current Minimum Viable Product (MVP) Include:"</h4>
                 <ul>
-                    <li>"Create, Read Update & Delete Todos"</li>
-                    <li>"Sharing of todos via generated link and optional password"</li>
-                    <li>
-                        "Client-side En- & Decryption of Lists, with Zero-Knowledge of ToDo content by the server."
-                    </li>
-                    <li>"Basic Filter & Search functionality"</li>
-                    <li>"Compatible with common desktop and mobile viewport sizes"</li>
+                    <li>"Support for multiple to-do lists"</li>
+                    <li>"Create, read, update, and delete (CRUD) capabilities for tasks"</li>
+                    <li>" To-do list sharing via link"</li>
+                    <li>"Basic search functionality"</li>
+                    <li>"Compatibility with common desktop and mobile viewport sizes"</li>
                 </ul>
-                <h4>"Nice to haves which will probably come later"</h4>
+                <h4>"Exciting Additions on Our Development Roadmap:"</h4>
                 <ul>
-                    <li>"Multiple Languages"</li>
-                    <li>"Real-time updates"</li>
-                    <li>"Accounts (NO idenityfing info needed on sign-up)"</li>
+                    <li>"Optional passwords with server-side validation"</li>
+                    <li>"Support for multiple languages"</li>
+                    <li>"Real-time updates for seamless collaboration"</li>
+                    <li>"Optional passwords with client-side end-to-end (E2E) encryption"</li>
                 </ul>
-                <h4>"Anti-features which are never going to be implemented."</h4>
+                <h4>"We Are Committed to Avoiding the Following \"Anti-Features\":"</h4>
                 <ul>
-                    <li>"Tracking"</li>
-                    <li>"Email Sign-Up"</li>
-                    <li>"Bundle Size >2MB (gzipped)"</li>
+                    <li>"User tracking"</li>
+                    <li>"Email sign-up requirements"</li>
+                    <li>"Bundle size exceeding 2MB (gzipped)"</li>
                 </ul>
             </article>
         </MainPage>
