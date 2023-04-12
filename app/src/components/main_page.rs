@@ -74,7 +74,7 @@ fn Navbar(cx: Scope) -> impl IntoView {
             },
             NavItem {
                 path:   "/todo".to_string(),
-                name:   "My Todos".to_string(),
+                name:   "My To-Dos".to_string(),
                 active: route_cx.path().starts_with("/todo"),
             },
         ]

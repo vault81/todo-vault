@@ -14,7 +14,7 @@ pub fn AboutPage(cx: Scope) -> impl IntoView {
                 <p>
                     "Though our current feature set is limited, we are working diligently to develop a comprehensive to-do list solution that meets the needs of individuals and teams alike."
                 </p>
-                <h4>" Key Features of Our Current Minimum Viable Product (MVP) Include:"</h4>
+                <h4>"Key Features of Our Current Minimum Viable Product (MVP) Include:"</h4>
                 <ul>
                     <li>"Support for multiple to-do lists"</li>
                     <li>"Create, read, update, and delete (CRUD) capabilities for tasks"</li>

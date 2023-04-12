@@ -62,7 +62,7 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
         id: "title".to_string(),
         label: Some("Title".to_string()),
         input_type: FormFieldInputType::Text,
-        placeholder: "My Todo List".to_string(),
+        placeholder: "My To-Do List".to_string(),
         value: "".to_string(),
         required: true,
     }];
@@ -93,19 +93,19 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
         let lists = my_lists.read(cx);
         if lists.is_none() || lists.unwrap_or(vec![]).is_empty() {
             view! { cx,
-                <TableRow>
-                    <TableCell>
-                        <div class="flex justify-center items-center">
-                            <div class="flex text-gray-500 dark:text-gray-400">
-                                <div class="w-6 h-6">{Svg::AlertCircle}</div>
-                                <span class="ml-2">
-                                    "No lists found. "
-                                    "Click the button on the top left of this panel to add a list."
-                                </span>
+                    <TableRow>
+                        <TableCell>
+                            <div class="flex justify-center items-center">
+                                <div class="flex text-gray-500 dark:text-gray-400">
+                                    <div class="w-6 h-6">{Svg::AlertCircle}</div>
+                                    <span class="ml-2">
+                                        "No lists found. "
+                                        "Click the button on the top left of this panel to add a list."
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    </TableCell>
-                </TableRow>
+                        </TableCell>
+                    </TableRow>
             }
             .into_view(cx)
         } else {
@@ -116,7 +116,7 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
     view! { cx,
         <MainPage>
             <h1 class="mb-4 text-2xl font-semibold text-gray-900 dark:text-white">
-                "My todo lists"
+                "My to-do lists"
             </h1>
             <div class="overflow-x-auto relative border-0 border-gray-200 shadow-md md:rounded-lg md:border dark:border-gray-700">
                 <div class="flex justify-between items-center p-2">
@@ -130,7 +130,9 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
                 <Table column_headers=column_headers>
                     <Transition fallback=move || {
                         view! { cx, <></> }
-                    }>{no_lists_row()}</Transition>
+                    }>
+                        {no_lists_row()}
+                    </Transition>
                     <For
                         each=move || my_lists.read(cx).unwrap_or(vec![])
                         key=|list| list.id

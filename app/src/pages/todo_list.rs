@@ -100,7 +100,7 @@ fn TodoRow(
             <TableCell class="grid order-3 grid-cols-1 col-span-2 col-end-12 grid-rows-2 row-span-3 row-start-1 gap-6 justify-items-center justify-self-end self-center p-4 pointer-events-auto md:flex-row md:grid-cols-2 md:grid-rows-1 md:grid-rows-none md:px-2">
                 <FormDrawerButton
                     action=edit_todo
-                    title="Edit Todo".to_string()
+                    title="Edit To-Do".to_string()
                     icon=Svg::FileEdit
                     fields=edit_todo_fields
                 />
@@ -236,7 +236,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                                 <div class="flex text-gray-500 dark:text-gray-400">
                                     <div class="w-6 h-6">{Svg::AlertCircle}</div>
                                     <span class="ml-2">
-                                        "No todos found. Click the button on the top left to add a new todo."
+                                        "No to-dos found. Click the button on the top left to add a new to-do."
                                     </span>
                                 </div>
                             </div>
@@ -251,7 +251,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                                 <div class="flex text-gray-500 dark:text-gray-400">
                                     <div class="w-6 h-6">{Svg::AlertCircle}</div>
                                     <span class="ml-2">
-                                        "No todos found for the search term: "
+                                        "No to-dos found for the search term: "
                                         <span class="font-semibold">{search()}</span>
                                     </span>
                                 </div>

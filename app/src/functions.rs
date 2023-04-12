@@ -249,7 +249,7 @@ pub async fn edit_todo(
     updated.due_date = entity::sea_orm::Set(due_date);
 
     updated.update(db.conn()).await.map_err(|_| {
-        ServerFnError::ServerError("No todo updated".to_string())
+        ServerFnError::ServerError("No to-do updated".to_string())
     })?;
 
     Ok(())
@@ -264,14 +264,14 @@ pub async fn toggle_todo(
     let mut updated: todos::ActiveModel = todos::Entity::find_by_id(id)
         .one(db.conn())
         .await
-        .map_err(|_| ServerFnError::ServerError("No todo found".to_string()))?
+        .map_err(|_| ServerFnError::ServerError("No to-do found".to_string()))?
         .unwrap()
         .into();
 
     updated.done = entity::sea_orm::Set(!updated.done.unwrap());
 
     updated.update(db.conn()).await.map_err(|_| {
-        ServerFnError::ServerError("No todo updated".to_string())
+        ServerFnError::ServerError("No to-do updated".to_string())
     })?;
 
     Ok(())

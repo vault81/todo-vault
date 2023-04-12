@@ -1,8 +1,8 @@
-# Todo Vault
+# TodoVault
 
 ## Overview
 
-This is a webapp to manage and share todo lists.
+This is a webapp to manage and share to-do lists.
 It tries to be simple and fast.
 
 ### Stack
