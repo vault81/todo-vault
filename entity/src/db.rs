@@ -1,6 +1,14 @@
 use std::time::Duration;
 
 use derive_more::Deref;
+use figment::{
+    providers::Env,
+    value::{Dict, Map},
+    Figment,
+    Metadata,
+    Profile,
+    Provider,
+};
 use migration::MigratorTrait;
 use sea_orm::{ConnectOptions, Database, DatabaseConnection, DbErr};
 use serde::{Deserialize, Serialize};
@@ -21,6 +29,17 @@ pub struct DbConfig {
     pub idle_timeout: Option<u64>,
 }
 
+impl DbConfig {
+    pub fn figment() -> Figment {
+        Figment::from(DbConfig::default())
+            .merge(Env::prefixed("VAULT_DB_").split('_'))
+            .select(Profile::from_env_or(
+                "VAULT_PROFILE",
+                Profile::const_new("debug"),
+            ))
+    }
+}
+
 impl Default for DbConfig {
     fn default() -> Self {
         Self {
@@ -30,6 +49,20 @@ impl Default for DbConfig {
             connect_timeout: 5,
             idle_timeout: Some(5),
         }
+    }
+}
+
+impl Provider for DbConfig {
+    fn metadata(&self) -> Metadata {
+        Metadata::named("TodoVault DB Config")
+    }
+
+    fn data(&self) -> Result<Map<Profile, Dict>, figment::Error> {
+        figment::providers::Serialized::defaults(DbConfig::default()).data()
+    }
+
+    fn profile(&self) -> Option<Profile> {
+        None
     }
 }
 

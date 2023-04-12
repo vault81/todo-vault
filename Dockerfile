@@ -58,6 +58,8 @@ RUN chmod +x ./out/server
 RUN sqlite3 ./out/default.sqlite3 "VACUUM;"
 
 FROM gcr.io/distroless/static-debian11
+
+WORKDIR /app
 COPY --from=build /build/out ./
 
 ENTRYPOINT ["./server"]
