@@ -55,12 +55,10 @@ RUN mkdir -p ./out/target \
     && cp -r ./target/server/x86_64-unknown-linux-gnu/release/server    ./out/server
 
 RUN chmod +x ./out/server
-RUN sqlite3 ./out/target/default.sqlite3 "VACUUM;"
+RUN sqlite3 ./out/default.sqlite3 "VACUUM;"
 
-# this distroless base image is just ~20MB
 FROM gcr.io/distroless/static-debian11
 COPY --from=build /build/out ./
 
-# total docker image size is ~36MB
 ENTRYPOINT ["./server"]
 CMD []

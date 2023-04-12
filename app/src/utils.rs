@@ -12,14 +12,11 @@ use leptos_router::*;
 use wasm_bindgen::{prelude::*, JsCast};
 use web_sys::{Document, DomRect, Element, Event, EventTarget, Window};
 
-fn window() -> Window {
-    web_sys::window().expect("No global `window` exists")
-}
+pub fn set_href(href: String) {
+    let window = window();
+    let location = window.location();
 
-fn document() -> Document {
-    window()
-        .document()
-        .expect("Should have a document on window")
+    location.set_href(&href).unwrap();
 }
 
 pub fn get_element_dom_rect(element_id: &str) -> Option<DomRect> {

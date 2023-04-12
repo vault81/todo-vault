@@ -83,6 +83,7 @@ Set the following enviornment variables (updating for your project as needed):
 ```text
 LEPTOS_OUTPUT_NAME="todo-vault"
 LEPTOS_SITE_ADDR="127.0.0.1:3000"
+LEPTOS_SITE_ROOT="./site"
 ```
 
 Finally, run the server binary.

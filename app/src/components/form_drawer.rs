@@ -30,6 +30,7 @@ pub enum FormFieldInputType {
     TextArea,
     Date,
     Hidden,
+    Password,
 }
 
 /// ### FormField
@@ -129,6 +130,19 @@ impl IntoView for FormField {
                     />
                 }.into_view(cx)
             }
+            FormFieldInputType::Password => {
+                view! { cx,
+                    <div class="relative mb-6">
+                        {label}
+                        <input
+                            type="password"
+                            id=self.id.clone()
+                            name=self.id.clone()
+                            required=self.required
+                        />
+                    </div>
+                }.into_view(cx)
+            }
         }
     }
 }
@@ -144,7 +158,7 @@ pub fn FormDrawerButton<S, O>(
     cx: Scope,
     icon: Svg,
     title: String,
-    action: Action<S, Result<O, ServerFnError>>,
+    action: MultiAction<S, Result<O, ServerFnError>>,
     fields: Vec<FormField>,
 ) -> impl IntoView
 where
@@ -196,7 +210,7 @@ where
                             <span class="sr-only">"Close menu"</span>
                         </button>
                         <div class="mb-6">
-                            <ActionForm action=action class="mb-6">
+                            <MultiActionForm action=action class="mb-6">
                                 {fields}
                                 <button
                                     type="reset"
@@ -207,7 +221,7 @@ where
                                     <div class="mr-2 w-5 h-5">{icon}</div>
                                     {title.clone()}
                                 </button>
-                            </ActionForm>
+                            </MultiActionForm>
                         </div>
                     </div>
                 }.into_view(cx)

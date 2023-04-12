@@ -1,4 +1,6 @@
 use leptos::*;
+use leptos_dom::*;
+use leptos_router::*;
 
 // buttons styled with tailwind css
 #[component]

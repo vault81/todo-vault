@@ -8,6 +8,7 @@ use std::sync::{
 use broadcaster::BroadcastChannel;
 use entity::{
     chrono::NaiveDate,
+    lists,
     sea_orm::{
         entity::ActiveModelTrait,
         query::QueryOrder,
@@ -25,6 +26,8 @@ pub fn register_server_functions() -> Result<(), ServerFnError> {
     GetServerCount::register()?;
     AdjustServerCount::register()?;
     ClearServerCount::register()?;
+    AddList::register()?;
+    FindList::register()?;
     AddTodo::register()?;
     ListTodos::register()?;
     TrashTodo::register()?;
@@ -70,11 +73,62 @@ pub fn db(cx: Scope) -> Result<Arc<entity::db::Db>, ServerFnError> {
         .map_err(|e| ServerFnError::ServerError(e.to_string()))
 }
 
-#[server(ListTodos, "/api")]
-pub async fn list_todos(cx: Scope) -> Result<Vec<todos::Model>, ServerFnError> {
+#[server(AddList, "/api")]
+pub async fn add_list(
+    cx: Scope,
+    title: String,
+) -> Result<lists::Model, ServerFnError> {
     let db = db(cx)?;
 
-    let todos = todos::Entity::find()
+    let list = lists::ActiveModel::new(title)
+        .insert(db.conn())
+        .await
+        .map_err(|e| {
+            let str = format!("{e}");
+            ServerFnError::ServerError(str)
+        })?;
+
+    Ok(list)
+}
+
+#[server(FindList, "/api")]
+pub async fn find_list(
+    cx: Scope,
+    list_id: uuid::Uuid,
+) -> Result<lists::Model, ServerFnError> {
+    let db = db(cx)?;
+
+    let list = lists::Entity::find_by_id(list_id)
+        .one(db.conn())
+        .await
+        .map_err(|e| ServerFnError::ServerError(format!("{e}")))?;
+
+    if list.is_none() {
+        return Err(ServerFnError::ServerError("No list found".to_string()));
+    }
+
+    Ok(list.unwrap())
+}
+
+#[server(ListTodos, "/api")]
+pub async fn list_todos(
+    cx: Scope,
+    list_id: uuid::Uuid,
+) -> Result<Vec<todos::Model>, ServerFnError> {
+    let db = db(cx)?;
+
+    let list = lists::Entity::find_by_id(list_id)
+        .one(db.conn())
+        .await
+        .map_err(|e| ServerFnError::ServerError(format!("{e}")))?;
+
+    if list.is_none() {
+        return Err(ServerFnError::ServerError("No list found".to_string()));
+    }
+
+    let todos = list
+        .unwrap()
+        .find_related(todos::Entity)
         .order_by_asc(todos::Column::CreatedAt)
         .all(db.conn())
         .await

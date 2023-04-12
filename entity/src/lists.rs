@@ -1,4 +1,4 @@
-use sea_orm::entity::prelude::*;
+use sea_orm::{entity::prelude::*, Set};
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -7,7 +7,8 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "lists")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
+    pub id:    Uuid,
+    pub title: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -23,3 +24,12 @@ impl Related<super::todos::Entity> for Entity {
 }
 
 impl ActiveModelBehavior for ActiveModel {}
+
+impl ActiveModel {
+    pub fn new(title: String) -> Self {
+        Self {
+            id:    Set(uuid::Uuid::new_v4()),
+            title: Set(title),
+        }
+    }
+}

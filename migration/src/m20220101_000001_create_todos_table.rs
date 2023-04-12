@@ -17,6 +17,7 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .primary_key(),
                     )
+                    .col(ColumnDef::new(Lists::Title).string().not_null())
                     .clone(),
             )
             .await?;
@@ -86,4 +87,5 @@ enum Todos {
 enum Lists {
     Table,
     Id,
+    Title,
 }
