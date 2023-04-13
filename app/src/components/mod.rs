@@ -1,11 +1,13 @@
 mod button;
-mod footer;
+mod dropdown_button;
 mod form_drawer;
-mod navbar;
+mod main_page;
 mod svg;
+mod table;
 
 pub use button::*;
-pub use footer::*;
+pub use dropdown_button::*;
 pub use form_drawer::*;
-pub use navbar::*;
+pub use main_page::*;
 pub use svg::*;
+pub use table::*;

@@ -2,7 +2,7 @@
 mod fileserv;
 use std::sync::Arc;
 
-use app::{functions::register_server_functions, *};
+use app::*;
 use axum::{
     body::Body,
     extract::{Extension, Path},
@@ -69,7 +69,8 @@ async fn main() {
     let leptos_options = conf.leptos_options;
     let addr = leptos_options.site_addr;
     let routes = generate_route_list(|cx| view! { cx, <App/> }).await;
-    let db = Db::connect(&DbConfig::default()).await.unwrap();
+    let db_config = DbConfig::figment().extract::<DbConfig>().unwrap();
+    let db = Db::connect(&db_config).await.unwrap();
     db.run_migrations().await.unwrap();
 
     // build our application with a route
