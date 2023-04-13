@@ -30,8 +30,8 @@ tracing = { version = "=0.1.37", features = ["async-await", "log"] }
 base64 = "=0.21.0"
 convert_case = "=0.6.0"
 rand = "=0.8.5"
-wasm-bindgen = "0.2"
-web-sys = { version = "0.3", features = [
+wasm-bindgen = "=0.2.84"
+web-sys = { version = "=0.3.61", features = [
   "console",
   "Document",
   "DomRect",
@@ -41,9 +41,9 @@ web-sys = { version = "0.3", features = [
   "Storage",
   "Window",
 ] }
-js-sys = "0.3.61"
-serde_json = { version = "1.0.95", features = ["alloc"] }
-futures = "0.3.28"
+js-sys = "=0.3.61"
+serde_json = { version = "=1.0.95", features = ["alloc"] }
+futures = "=0.3.28"
 
 [features]
 default = ["ssr"]
