@@ -1,9 +1,13 @@
 # TodoVault
 
+[![Build & Test](https://github.com/vault81/todo-vault/actions/workflows/build.yml/badge.svg)](https://github.com/vault81/todo-vault/actions/workflows/build.yml)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/vault81/todo-vault)
+[![Rust Report Card](https://rust-reportcard.xuri.me/badge/github.com/vault81/todo-vault)](https://rust-reportcard.xuri.me/report/github.com/vault81/todo-vault)
+[![license-badge](https://img.shields.io/github/license/vault81/todo-vault)](https://github.com/vault81/todo-vault/blob/main/LICENSE.md)
+
 ## Overview
 
-This is a webapp to manage and share to-do lists.
-It tries to be simple and fast.
+TodoVault is a free and open-source web application designed to manage your to-do lists and facilitate collaboration with others.
 
 ### Stack
 
