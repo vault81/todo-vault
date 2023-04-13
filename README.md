@@ -17,7 +17,7 @@ The current stack includes (but is not limited too):
 - ORM: [SeaORM](https://www.sea-ql.org/SeaORM/)
 - Server Framework: [Axum](https://github.com/tokio-rs/axum)
 - Web App Framework(with hydration+SSR): [leptos](https://github.com/leptos-rs/leptos)
-- CSS Framework [TailwindCSS](Web App Framework(with hydration+SSR): [leptos](https://github.com/leptos-rs/leptos))
+- CSS Framework [TailwindCSS](https://tailwindcss.com)
 
 ### Server System Requirements
 
