@@ -25,7 +25,7 @@ serde = { version = "=1.0.160", features = [
   "rc",
 ] }
 lazy_static = "=1.4.0"
-getrandom = { version = "=0.2.8", features = ["js", "std"] }
+getrandom = { version = "=0.2.9", features = ["js", "std"] }
 tracing = { version = "=0.1.37", features = ["async-await", "log"] }
 base64 = "=0.21.0"
 convert_case = "=0.6.0"
