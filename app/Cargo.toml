@@ -42,7 +42,7 @@ web-sys = { version = "=0.3.61", features = [
   "Window",
 ] }
 js-sys = "=0.3.61"
-serde_json = { version = "=1.0.95", features = ["alloc"] }
+serde_json = { version = "=1.0.96", features = ["alloc"] }
 futures = "=0.3.28"
 
 [features]
