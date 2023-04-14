@@ -18,7 +18,7 @@ broadcaster = { version = "=1.0.0", optional = true }
 cfg-if = "=1.0.0"
 http = "=0.2.9"
 thiserror = "=1.0.40"
-serde = { version = "=1.0.159", features = [
+serde = { version = "=1.0.160", features = [
   "derive",
   "serde_derive",
   "alloc",

@@ -20,7 +20,7 @@ figment = { version = "=0.10.8", features = [
   "env",
   "yaml",
 ], optional = true }
-serde = { version = "=1.0.159", features = [
+serde = { version = "=1.0.160", features = [
   "derive",
   "serde_derive",
   "alloc",
