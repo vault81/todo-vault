@@ -199,6 +199,7 @@ pub async fn add_todo(
     list_id: uuid::Uuid,
     title: String,
     description: Option<String>,
+    assignee: Option<String>,
     due_date: Option<String>,
 ) -> Result<(), ServerFnError> {
     let db = db(cx)?;
@@ -212,7 +213,7 @@ pub async fn add_todo(
         })
         .transpose()?;
 
-    todos::ActiveModel::new(list_id, title, description, due_date)
+    todos::ActiveModel::new(list_id, title, description, assignee, due_date)
         .insert(db.conn())
         .await
         .map_err(|e| {
