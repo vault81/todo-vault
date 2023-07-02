@@ -22,6 +22,7 @@ leptos_dom = { version = "=0.2.5", default-features = false }
 leptos_meta = { version = "=0.2.5", default-features = false }
 leptos_router = { version = "=0.2.5", default-features = false }
 leptos_axum = { version = "=0.2.5" }
+wasm-bindgen = "=0.2.87"
 
 [[workspace.metadata.leptos]]
 name = "todo-vault"
