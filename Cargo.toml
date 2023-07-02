@@ -17,11 +17,11 @@ opt-level = 3
 members = ["app", "entity", "migration", "server", "wasm-lib"]
 
 [workspace.dependencies]
-leptos = { version = "=0.2.5", default-features = false, features = ["serde"] }
-leptos_dom = { version = "=0.2.5", default-features = false }
-leptos_meta = { version = "=0.2.5", default-features = false }
-leptos_router = { version = "=0.2.5", default-features = false }
-leptos_axum = { version = "=0.2.5" }
+leptos = { version = "=0.4.0", default-features = false, features = ["serde", "nightly"] }
+leptos_dom = { version = "=0.4.0", default-features = false, features = [ "nightly" ] }
+leptos_meta = { version = "=0.4.0", default-features = false, features = [ "nightly" ] }
+leptos_router = { version = "=0.4.0", default-features = false }
+leptos_axum = { version = "=0.4.0" }
 wasm-bindgen = "=0.2.87"
 
 [[workspace.metadata.leptos]]

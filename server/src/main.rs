@@ -5,9 +5,10 @@ use std::sync::Arc;
 use app::*;
 use axum::{
     body::Body,
-    extract::{Extension, Path},
+    extract::{Path, RawQuery, State},
     response::{IntoResponse, Response},
     routing::{get, post},
+    Extension,
     Router,
 };
 use entity::db::{Db, DbConfig};
@@ -29,12 +30,14 @@ async fn server_fn_handler(
     Extension(db): Extension<Arc<Db>>,
     path: Path<String>,
     headers: HeaderMap,
+    raw_query: RawQuery,
     request: Request<Body>,
 ) -> impl IntoResponse {
     tracing::info!("serverfn: {:?}", path);
     handle_server_fns_with_context(
         path,
         headers,
+        raw_query,
         move |cx| {
             provide_context(cx, db.clone());
         },
@@ -45,11 +48,11 @@ async fn server_fn_handler(
 
 async fn leptos_routes_handler(
     Extension(db): Extension<Arc<Db>>,
-    Extension(options): Extension<Arc<LeptosOptions>>,
+    State(options): State<LeptosOptions>,
     request: Request<Body>,
 ) -> Response {
     let handler = leptos_axum::render_app_to_stream_with_context(
-        (*options).clone(),
+        (options).clone(),
         move |cx| {
             provide_context(cx, db.clone());
         },
@@ -78,7 +81,7 @@ async fn main() {
         .route("/api/*fn_name", post(server_fn_handler))
         .leptos_routes_with_handler(routes, get(leptos_routes_handler))
         .fallback(file_and_error_handler)
-        .layer(Extension(Arc::new(leptos_options)))
+        .with_state(leptos_options)
         .layer(Extension(Arc::new(db)))
         .layer(SetSensitiveRequestHeadersLayer::new(vec![
             header::AUTHORIZATION,

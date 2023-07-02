@@ -154,7 +154,7 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
             }
             .into_view(cx)
         } else {
-            view! { cx, <></> }.into_view(cx)
+            view! { cx, <>""</> }.into_view(cx)
         }
     };
 

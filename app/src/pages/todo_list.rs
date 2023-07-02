@@ -270,7 +270,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                 .into_view(cx)
             }
         } else {
-            view! { cx, <></> }.into_view(cx)
+            view! { cx, <>""</> }.into_view(cx)
         }
     };
 

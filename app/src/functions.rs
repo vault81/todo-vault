@@ -1,3 +1,4 @@
+use std::convert::Infallible;
 #[cfg(feature = "ssr")]
 use std::sync::{
     atomic::{AtomicI32, Ordering},
@@ -28,17 +29,17 @@ use thiserror::Error;
 
 #[cfg(feature = "ssr")]
 pub fn register_server_functions() -> Result<(), ServerFnError> {
-    GetServerCount::register()?;
-    AdjustServerCount::register()?;
-    ClearServerCount::register()?;
-    AddList::register()?;
-    FindList::register()?;
-    DeleteList::register()?;
-    AddTodo::register()?;
-    ListTodos::register()?;
-    DeleteTodo::register()?;
-    EditTodo::register()?;
-    ToggleTodo::register()?;
+    // GetServerCount::register()?;
+    // AdjustServerCount::register()?;
+    // ClearServerCount::register()?;
+    // AddList::register()?;
+    // FindList::register()?;
+    // DeleteList::register()?;
+    // AddTodo::register()?;
+    // ListTodos::register()?;
+    // DeleteTodo::register()?;
+    // EditTodo::register()?;
+    // ToggleTodo::register()?;
     Ok(())
 }
 
@@ -207,9 +208,8 @@ pub async fn add_todo(
     let due_date = due_date
         .and_then(|str| if str.is_empty() { None } else { Some(str) })
         .map(|string| {
-            let naive_date = NaiveDate::parse_from_str(&string, "%Y-%m-%d")
-                .map_err(|op| ServerFnError::ServerError(format!("{}", op)))?;
-            Ok(naive_date)
+            NaiveDate::parse_from_str(&string, "%Y-%m-%d")
+                .map_err(|op| ServerFnError::ServerError(format!("{}", op)))
         })
         .transpose()?;
 
@@ -256,9 +256,8 @@ pub async fn edit_todo(
     let due_date = due_date
         .and_then(|str| if str.is_empty() { None } else { Some(str) })
         .map(|string| {
-            let naive_date = NaiveDate::parse_from_str(&string, "%Y-%m-%d")
-                .map_err(|op| ServerFnError::ServerError(format!("{}", op)))?;
-            Ok(naive_date)
+            NaiveDate::parse_from_str(&string, "%Y-%m-%d")
+                .map_err(|op| ServerFnError::ServerError(format!("{}", op)))
         })
         .transpose()?;
 

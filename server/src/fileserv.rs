@@ -1,9 +1,6 @@
-use std::sync::Arc;
-
-use app::error_template::{AppError, ErrorTemplate, ErrorTemplateProps};
 use axum::{
     body::{boxed, Body, BoxBody},
-    extract::Extension,
+    extract::State,
     http::{Request, Response, StatusCode, Uri},
     response::{IntoResponse, Response as AxumResponse},
 };
@@ -11,23 +8,22 @@ use leptos::*;
 use tower::ServiceExt;
 use tower_http::services::ServeDir;
 
+use super::App;
+
 pub async fn file_and_error_handler(
     uri: Uri,
-    Extension(options): Extension<Arc<LeptosOptions>>,
+    State(options): State<LeptosOptions>,
     req: Request<Body>,
 ) -> AxumResponse {
-    let options = &*options;
     let root = options.site_root.clone();
     let res = get_static_file(uri.clone(), &root).await.unwrap();
 
     if res.status() == StatusCode::OK {
         res.into_response()
     } else {
-        let mut errors = Errors::default();
-        errors.insert_with_default_key(AppError::NotFound);
         let handler = leptos_axum::render_app_to_stream(
-            options.clone(),
-            move |cx| view! { cx, <ErrorTemplate outside_errors=errors.clone()/> },
+            options.to_owned(),
+            move |cx| view! {cx, <App/>},
         );
         handler(req).await.into_response()
     }

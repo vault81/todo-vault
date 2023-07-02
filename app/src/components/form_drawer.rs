@@ -67,7 +67,7 @@ impl IntoView for FormField {
                                    {label}
                                </label>
                            }.into_view(cx),
-            None => view! { cx, <></> }.into_view(cx)
+            None => view! { cx, <>""</> }.into_view(cx)
         };
 
         match self.input_type {
