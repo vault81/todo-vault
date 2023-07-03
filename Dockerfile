@@ -31,15 +31,16 @@ RUN git clone https://github.com/rui314/mold.git -b v1.11.0 --depth 1 && \
 
 
 # install leptos build helper cli
-RUN cargo install --git https://github.com/akesson/cargo-leptos cargo-leptos --force
+RUN cargo install cargo-leptos@0.1.11 --force
+
+# Build
+WORKDIR /build
 
 ADD ./package.json ./package.json
 ADD ./package-lock.json ./package-lock.json
 
 RUN npm install
 
-# Build
-WORKDIR /build
 
 # install rust toolchain
 COPY rust-toolchain.toml .

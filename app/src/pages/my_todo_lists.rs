@@ -63,8 +63,8 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
     tracing::info!("MyTodoListsPage");
 
     let delete_list_action =
-        create_multi_action(cx.clone(), move |delete_list_p: &DeleteList| {
-            let cx = cx.clone();
+        create_multi_action(cx, move |delete_list_p: &DeleteList| {
+            let cx = cx;
             let delete_list_p = delete_list_p.clone();
             async move {
                 remove_from_local_storage(delete_list_p.list_id);
@@ -76,7 +76,7 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
 
     let add_list_action =
         create_multi_action(cx, move |add_list_p: &AddList| {
-            let cx = cx.clone();
+            let cx = cx;
             let add_list_p = add_list_p.clone();
             async move {
                 let list = add_list(cx, add_list_p.title).await?;
@@ -104,12 +104,12 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
             )
         },
         move |_| {
-            let cx = cx.clone();
+            let cx = cx;
             async move {
                 let list_ids = retrieve_from_local_storage();
                 let lists = list_ids
                     .into_iter()
-                    .map(|list_id| find_list(cx.clone(), list_id))
+                    .map(|list_id| find_list(cx, list_id))
                     .collect::<Vec<_>>();
                 let lists = futures::future::join_all(lists).await;
                 let lists: Vec<entity::lists::Model> =
@@ -175,7 +175,7 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
                 <Table column_headers=column_headers>
                     <Transition fallback=move || {
                         view! { cx, <></> }
-                    }>{no_lists_row()}</Transition>
+                    }>{move || no_lists_row()}</Transition>
                     <For
                         each=move || my_lists.read(cx).unwrap_or(vec![])
                         key=|list| list.id

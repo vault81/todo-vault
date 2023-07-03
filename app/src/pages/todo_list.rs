@@ -64,7 +64,7 @@ fn TodoRow(
     view! { cx,
         <TableRow class="grid grid-cols-12 items-baseline rounded border md:table-row md:my-0 md:rounded-none md:border-b grid-rows-auto min-w-[20rem]">
             <TableCell
-                on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone() })
+                on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id })
                 class="order-1 col-start-1 row-span-3 row-start-1 justify-self-center pointer-events-auto"
             >
                 <div class="flex items-center">
@@ -76,19 +76,19 @@ fn TodoRow(
                 </div>
             </TableCell>
             <TableCell
-                on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone() })
+                on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id })
                 class="order-2 col-span-8 col-start-2 row-start-1 p-4 min-w-0 text-lg font-medium text-gray-900 pointer-events-auto md:text-base dark:text-white truncate"
             >
                 <span onclick="event.cancelBubble = true;">{todo.title.clone()}</span>
             </TableCell>
             <TableCell
-                on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone() })
+                on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id })
                 class="overflow-y-auto overflow-x-hidden order-4 col-span-8 col-start-2 row-start-2 p-4 min-w-0 min-h-0 max-h-64 whitespace-pre pointer-events-auto text-ellipsis md:truncate"
             >
                 <span onclick="event.cancelBubble = true;">{todo.description.clone()}</span>
             </TableCell>
             <TableCell
-                on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id.clone() })
+                on:click=move |_| toggle_todo.dispatch(ToggleTodo { id: todo.id })
                 class="order-5 col-span-8 col-start-2 row-start-3 p-4 pointer-events-auto"
             >
                 <span onclick="event.cancelBubble = true;">
@@ -175,14 +175,14 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
     let edit_todo = create_server_multi_action::<EditTodo>(cx);
     let delete_todo = create_server_action::<DeleteTodo>(cx);
     let toggle_todo = create_server_action::<ToggleTodo>(cx);
-    let list_resource = create_resource(
+    let list_resource = create_blocking_resource(
         cx,
         move || (list_id,),
         move |_| async move { find_list(cx, list_id).await },
     );
 
     let (search, set_search) = create_signal(cx, "".to_string());
-    let list_todos_resource = create_resource(
+    let list_todos_resource = create_blocking_resource(
         cx,
         move || {
             (
@@ -266,8 +266,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                             </div>
                         </TableCell>
                     </TableRow>
-                }
-                .into_view(cx)
+                }.into_view(cx)
             }
         } else {
             view! { cx, <>""</> }.into_view(cx)
@@ -280,10 +279,12 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                 view! { cx, <h1 class="bg-red-700">"Loading..."</h1> }
             }>
                 <h1 class="mb-4 text-2xl font-semibold text-gray-900 dark:text-white">
-                    {list_resource
-                        .read(cx)
-                        .map(|list| list.expect("no list").title.clone())
-                        .unwrap_or_else(|| "".to_string())}
+                    {move || {
+                        list_resource
+                            .read(cx)
+                            .map(|list| list.expect("no list").title)
+                            .unwrap_or_else(|| "".to_string())}
+                    }
                 </h1>
             </Transition>
             <div class="overflow-x-auto relative border-0 border-gray-200 shadow-md md:rounded-lg md:border dark:border-gray-700">
@@ -304,7 +305,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                             on:input=move |ev| {
                                 set_search(event_target_value(&ev));
                             }
-                            prop:value=search
+                            prop:value=move || search()
                         />
                     </div>
                 </div>
@@ -312,7 +313,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                     view! { cx, <tr class="bg-red-700">"Loading..."</tr> }
                 }>
                     <Table column_headers=column_headers.clone()>
-                        {no_todos_row()}
+                        {move || no_todos_row()}
                         <For
                             each=move || list_todos_resource.read(cx).unwrap_or(vec![])
                             key=|todo| todo.calc_hash()
@@ -334,8 +335,7 @@ pub fn TodoListPage(cx: Scope) -> impl IntoView {
     let params = use_params_map(cx);
     let list_id = move || {
         params.with(|params| {
-            let str =
-                params.get("list_id").cloned().unwrap_or_default().clone();
+            let str = params.get("list_id").cloned().unwrap_or_default();
 
             uuid::Uuid::parse_str(&str).unwrap_or_default()
         })
