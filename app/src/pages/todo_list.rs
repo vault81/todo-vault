@@ -278,7 +278,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
                         on:input=move |ev| {
                             set_search(event_target_value(&ev));
                         }
-                        prop:value=move || search()
+                        prop:value=search
                     />
                 </div>
             </div>
@@ -304,7 +304,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
             <div class="overflow-x-auto relative border-0 border-gray-200 shadow-md md:rounded-lg md:border dark:border-gray-700">
                 {toolbar()}
                 <Table column_headers=column_headers.clone()>
-                    {move || no_todos_row()}
+                    {no_todos_row}
                     <For
                         each=move || list_todos_resource.read(cx).unwrap_or(vec![])
                         key=|todo| todo.calc_hash()

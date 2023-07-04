@@ -169,7 +169,7 @@ pub fn MyTodoListsPage(cx: Scope) -> impl IntoView {
                     />
                 </div>
                 <Table column_headers=column_headers>
-                    {move || no_lists_row()}
+                    {no_lists_row}
                     <For
                         each=move || my_lists.read(cx).unwrap_or(vec![])
                         key=|list| list.id
