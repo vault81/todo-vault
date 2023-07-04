@@ -28,22 +28,6 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 #[cfg(feature = "ssr")]
-pub fn register_server_functions() -> Result<(), ServerFnError> {
-    // GetServerCount::register()?;
-    // AdjustServerCount::register()?;
-    // ClearServerCount::register()?;
-    // AddList::register()?;
-    // FindList::register()?;
-    // DeleteList::register()?;
-    // AddTodo::register()?;
-    // ListTodos::register()?;
-    // DeleteTodo::register()?;
-    // EditTodo::register()?;
-    // ToggleTodo::register()?;
-    Ok(())
-}
-
-#[cfg(feature = "ssr")]
 static COUNT: AtomicI32 = AtomicI32::new(0);
 
 #[cfg(feature = "ssr")]

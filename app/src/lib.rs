@@ -8,8 +8,6 @@ mod functions;
 mod pages;
 mod utils;
 
-#[cfg(feature = "ssr")]
-pub use functions::register_server_functions;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;

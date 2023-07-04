@@ -65,8 +65,6 @@ async fn leptos_routes_handler(
 async fn main() {
     tracing_subscriber::fmt().with_max_level(Level::INFO).init();
 
-    register_server_functions().expect("Failed to register server functions");
-
     // Setting get_configuration(None) means we'll be using cargo-leptos's env values
     let conf = get_configuration(None).await.unwrap();
     let leptos_options = conf.leptos_options;
