@@ -16,16 +16,23 @@ pub fn TableCell(
     }
 }
 
+use leptos::html::Tr;
+
 #[component]
 pub fn TableRow(
     cx: Scope,
     children: Children,
     #[prop(optional, into)] class: String,
+    #[prop(default = false)] hidden: bool,
 ) -> impl IntoView {
+    tracing::trace!("TableRow: {}", hidden);
+    tracing::trace!("TableRow: {}", class);
     view! { cx,
-        <tr class=format!(
-            "my-4 bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 {class}"
-        )>{children(cx)}</tr>
+        <tr class=format!("my-4 bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 {class}")
+            class:hidden=hidden
+        >
+            {children(cx)}
+        </tr>
     }
 }
 

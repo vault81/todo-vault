@@ -175,14 +175,14 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
     let edit_todo = create_server_multi_action::<EditTodo>(cx);
     let delete_todo = create_server_action::<DeleteTodo>(cx);
     let toggle_todo = create_server_action::<ToggleTodo>(cx);
-    let list_resource = create_blocking_resource(
+    let list_resource = create_resource(
         cx,
         move || (list_id,),
         move |_| async move { find_list(cx, list_id).await },
     );
 
     let (search, set_search) = create_signal(cx, "".to_string());
-    let list_todos_resource = create_blocking_resource(
+    let list_todos_resource = create_resource(
         cx,
         move || {
             (
@@ -235,98 +235,88 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
     ];
 
     let no_todos_row = move || {
-        if list_todos_resource.read(cx).unwrap_or_default().is_empty() {
-            if search().is_empty() {
-                view! { cx,
-                    <TableRow>
-                        <TableCell colspan=5 class="col-span-5 text-center">
-                            <div class="flex justify-center items-center">
-                                <div class="flex text-gray-500 dark:text-gray-400">
-                                    <div class="w-6 h-6">{Svg::AlertCircle}</div>
-                                    <span class="ml-2">
-                                        "No to-dos found. Click the button on the top left to add a new to-do."
-                                    </span>
-                                </div>
-                            </div>
-                        </TableCell>
-                    </TableRow>
-                }.into_view(cx)
-            } else {
-                view! { cx,
-                    <TableRow>
-                        <TableCell colspan=5 class="col-span-5 text-center">
-                            <div class="flex justify-center items-center">
-                                <div class="flex text-gray-500 dark:text-gray-400">
-                                    <div class="w-6 h-6">{Svg::AlertCircle}</div>
-                                    <span class="ml-2">
-                                        "No to-dos found for the search term: "
-                                        <span class="font-semibold">{search()}</span>
-                                    </span>
-                                </div>
-                            </div>
-                        </TableCell>
-                    </TableRow>
-                }.into_view(cx)
-            }
-        } else {
-            view! { cx, <>""</> }.into_view(cx)
+        let hidden = move || {
+            !list_todos_resource.read(cx).unwrap_or_default().is_empty()
+        };
+
+        view! { cx,
+            <TableRow hidden=hidden()>
+                <TableCell colspan=5 class="col-span-5 text-center">
+                    <div class="flex justify-center items-center">
+                        <div class="flex text-gray-500 dark:text-gray-400">
+                            <div class="w-6 h-6">{Svg::AlertCircle}</div>
+                            <span class="ml-2">
+                                "No to-dos found. Click the button on the top left to add a new to-do."
+                            </span>
+                        </div>
+                    </div>
+                </TableCell>
+            </TableRow>
         }
+        // <span class="ml-2">
+        //     "No to-dos found for the search term: "
+        //     <span class="font-semibold">{search()}</span>
+        // </span>
+    };
+    let toolbar = move || {
+        view! {
+            cx,
+            <div class="flex justify-between items-center p-2">
+                <AddTodoDrawer list_id=list_id add_todo=add_todo/>
+                <div class="relative">
+                    <label for="table-search" class="sr-only">
+                        "Search"
+                    </label>
+                    <div class="absolute left-0 top-2 items-center pl-3 text-gray-400 pointer-events-none">
+                        <div class="w-5 h-5">{Svg::Search}</div>
+                    </div>
+                    <input
+                        type="text"
+                        id="table-search"
+                        class="block p-2 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-orange-500 focus:ring-orange-500 min-w-[7em]"
+                        placeholder="Search"
+                        on:input=move |ev| {
+                            set_search(event_target_value(&ev));
+                        }
+                        prop:value=move || search()
+                    />
+                </div>
+            </div>
+        }
+    };
+    let title = move || {
+        list_resource
+            .read(cx)
+            .map(move |list| match list {
+                Ok(list) => list.title,
+                Err(_) => "".to_string(),
+            })
+            .unwrap_or_else(|| "".to_string())
     };
 
     view! { cx,
-        <>
-            <Transition fallback=move || {
-                view! { cx, <h1 class="bg-red-700">"Loading..."</h1> }
-            }>
-                <h1 class="mb-4 text-2xl font-semibold text-gray-900 dark:text-white">
-                    {move || {
-                        list_resource
-                            .read(cx)
-                            .map(|list| list.expect("no list").title)
-                            .unwrap_or_else(|| "".to_string())}
-                    }
-                </h1>
-            </Transition>
+        <Transition fallback=move || {
+            view! { cx, <h1 class="bg-red-700">"Loading..."</h1> }
+        }>
+            <h1 class="mb-4 text-2xl font-semibold text-gray-900 dark:text-white">
+                {title()}
+            </h1>
             <div class="overflow-x-auto relative border-0 border-gray-200 shadow-md md:rounded-lg md:border dark:border-gray-700">
-                <div class="flex justify-between items-center p-2">
-                    <AddTodoDrawer list_id=list_id add_todo=add_todo/>
-                    <div class="relative">
-                        <label for="table-search" class="sr-only">
-                            "Search"
-                        </label>
-                        <div class="absolute left-0 top-2 items-center pl-3 text-gray-400 pointer-events-none">
-                            <div class="w-5 h-5">{Svg::Search}</div>
-                        </div>
-                        <input
-                            type="text"
-                            id="table-search"
-                            class="block p-2 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:placeholder-gray-400 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:border-orange-500 focus:ring-orange-500 min-w-[7em]"
-                            placeholder="Search"
-                            on:input=move |ev| {
-                                set_search(event_target_value(&ev));
+                {toolbar()}
+                <Table column_headers=column_headers.clone()>
+                    {move || no_todos_row()}
+                    <For
+                        each=move || list_todos_resource.read(cx).unwrap_or(vec![])
+                        key=|todo| todo.calc_hash()
+                        view=move |cx, todo: todos::Model| {
+                            view! { cx,
+                                <TodoRow todo=todo toggle_todo=toggle_todo delete_todo=delete_todo edit_todo=edit_todo/>
                             }
-                            prop:value=move || search()
-                        />
-                    </div>
-                </div>
-                <Transition fallback=move || {
-                    view! { cx, <tr class="bg-red-700">"Loading..."</tr> }
-                }>
-                    <Table column_headers=column_headers.clone()>
-                        {move || no_todos_row()}
-                        <For
-                            each=move || list_todos_resource.read(cx).unwrap_or(vec![])
-                            key=|todo| todo.calc_hash()
-                            view=move |cx, todo: todos::Model| {
-                                view! { cx,
-                                    <TodoRow todo=todo toggle_todo=toggle_todo delete_todo=delete_todo edit_todo=edit_todo/>
-                                }
-                            }
-                        />
-                    </Table>
-                </Transition>
+                        }
+                    />
+                </Table>
             </div>
-        </>
+        </Transition>
     }
 }
 
@@ -334,7 +324,7 @@ fn TodoList(cx: Scope, list_id: uuid::Uuid) -> impl IntoView {
 pub fn TodoListPage(cx: Scope) -> impl IntoView {
     let params = use_params_map(cx);
     let list_id = move || {
-        params.with(|params| {
+        params.with(move |params| {
             let str = params.get("list_id").cloned().unwrap_or_default();
 
             uuid::Uuid::parse_str(&str).unwrap_or_default()
