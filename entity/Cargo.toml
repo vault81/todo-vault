@@ -14,18 +14,8 @@ migration = { path = "../migration", optional = true }
 
 async-std = { version = "=1.12.0", features = ["attributes", "tokio1"] }
 derive_more = "=0.99.17"
-figment = { version = "=0.10.10", features = [
-  "toml",
-  "json",
-  "env",
-  "yaml",
-], optional = true }
-serde = { version = "=1.0.166", features = [
-  "derive",
-  "serde_derive",
-  "alloc",
-  "rc",
-] }
+figment = { version = "=0.10.10", features = ["toml", "json", "env", "yaml"], optional = true }
+serde = { version = "=1.0.166", features = ["derive", "serde_derive", "alloc", "rc"] }
 thiserror = "=1.0.41"
 tracing = { version = "=0.1.37" }
 uuid = { version = "=1.4.0", features = ["v4", "v7"] }
@@ -37,10 +27,5 @@ features = ["with-time", "with-json", "with-uuid"]
 
 [features]
 default = ["server-side"]
-server-side = [
-  "dep:migration",
-  "dep:figment",
-  "sea-orm/runtime-tokio-rustls",
-  "sea-orm/sqlx-sqlite",
-]
+server-side = ["dep:migration", "dep:figment", "sea-orm/runtime-tokio-rustls", "sea-orm/sqlx-sqlite"]
 client-side = []

@@ -14,30 +14,9 @@ leptos_router = { workspace = true, features = ["ssr"] }
 axum = "=0.6.18"
 tokio = "=1.29.1"
 tower = "=0.4.13"
-tower-http = { version = "=0.4.1", features = [
-  "cors",
-  "fs",
-  "sensitive-headers",
-  "tokio",
-  "trace",
-  "tracing",
-  "uuid",
-] }
+tower-http = { version = "=0.4.1", features = ["cors", "fs", "sensitive-headers", "tokio", "trace", "tracing", "uuid"] }
 thiserror = "=1.0.41"
 tracing = { version = "=0.1.37", features = ["async-await", "log"] }
 http = "=0.2.9"
-serde = { version = "=1.0.166", features = [
-  "derive",
-  "serde_derive",
-  "unstable",
-  "alloc",
-  "rc",
-] }
-tracing-subscriber = { version = "=0.3.17", features = [
-  "once_cell",
-  "serde",
-  "serde_json",
-  "time",
-  "tracing",
-  "json",
-] }
+serde = { version = "=1.0.166", features = ["derive", "serde_derive", "unstable", "alloc", "rc"] }
+tracing-subscriber = { version = "=0.3.17", features = ["once_cell", "serde", "serde_json", "time", "tracing", "json"] }
