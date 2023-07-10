@@ -18,8 +18,8 @@ entity = { path = "../entity", default-features = false }
 broadcaster = { version = "=1.0.0", optional = true }
 cfg-if = "=1.0.0"
 http = "=0.2.9"
-thiserror = "=1.0.41"
-serde = { version = "=1.0.166", features = ["derive", "serde_derive", "alloc", "rc"] }
+thiserror = "=1.0.43"
+serde = { version = "=1.0.171", features = ["derive", "serde_derive", "alloc", "rc"] }
 lazy_static = "=1.4.0"
 getrandom = { version = "=0.2.10", features = ["js", "std"] }
 tracing = { version = "=0.1.37", features = ["async-await", "log"] }
