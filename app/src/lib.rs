@@ -30,25 +30,7 @@ pub fn App(cx: Scope) -> impl IntoView {
                     <Route
                         path="/"
                         view=move |cx| {
-                            view! { cx, <AboutPage/> }
-                        }
-                    />
-                    <Route
-                        path="/todo"
-                        view=move |cx| {
-                            view! { cx, <MyTodoListsPage/> }
-                        }
-                    />
-                    <Route
-                        path="/todo/:list_id"
-                        view=move |cx| {
-                            view! { cx, <TodoListPage/> }
-                        }
-                    />
-                    <Route
-                        path="/about"
-                        view=move |cx| {
-                            view! { cx, <AboutPage/> }
+                            view! { cx, <IndexPage/> }
                         }
                     />
                 </Routes>

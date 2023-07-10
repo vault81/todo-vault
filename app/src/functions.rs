@@ -256,3 +256,20 @@ pub async fn toggle_todo(
 
     Ok(())
 }
+
+#[server(FindTodo, "/api")]
+pub async fn find_todo(
+    cx: Scope,
+    id: uuid::Uuid,
+) -> Result<todos::Model, ServerFnError> {
+    let db = db(cx)?;
+
+    let todo = todos::Entity::find_by_id(id)
+        .one(db.conn())
+        .await?
+        .ok_or_else(|| {
+            ServerFnError::ServerError("No to-do found".to_string())
+        })?;
+
+    Ok(todo)
+}

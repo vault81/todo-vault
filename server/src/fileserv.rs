@@ -23,7 +23,7 @@ pub async fn file_and_error_handler(
     } else {
         let handler = leptos_axum::render_app_to_stream(
             options.to_owned(),
-            move |cx| view! {cx, <App/>},
+            move |cx| view! { cx, <App/> },
         );
         handler(req).await.into_response()
     }
