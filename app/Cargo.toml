@@ -11,6 +11,8 @@ leptos_dom.workspace = true
 leptos_meta.workspace = true
 leptos_router.workspace = true
 leptos_axum = { workspace = true, optional = true }
+leptos_icons = { version = "0.0.15", features = [ "OcFileAddedSm", "OcTrashLg", "macros" ] }
+leptos-use = { version = "0.5.0", features = ["storage"]}
 wasm-bindgen = { workspace = true }
 
 entity = { path = "../entity", default-features = false }
@@ -26,16 +28,7 @@ tracing = { version = "=0.1.37", features = ["async-await", "log"] }
 base64 = "=0.21.2"
 convert_case = "=0.6.0"
 rand = "=0.8.5"
-web-sys = { version = "=0.3.64", features = [
-  "console",
-  "Document",
-  "DomRect",
-  "Element",
-  "Event",
-  "EventTarget",
-  "Storage",
-  "Window",
-] }
+web-sys = { version = "=0.3.64", features = ["console", "Document", "DomRect", "Element", "Event", "EventTarget", "Storage", "Window"] }
 js-sys = "=0.3.64"
 serde_json = { version = "=1.0.100", features = ["alloc"] }
 futures = "=0.3.28"
@@ -43,4 +36,4 @@ futures = "=0.3.28"
 [features]
 default = ["ssr"]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate", "entity/client-side"]
-ssr = ["entity/server-side", "leptos/ssr", "leptos_meta/ssr", "leptos_router/ssr", "dep:leptos_axum", "dep:broadcaster"]
+ssr = ["entity/server-side", "leptos/ssr", "leptos_meta/ssr", "leptos_router/ssr", "leptos-use/ssr", "dep:leptos_axum", "dep:broadcaster"]

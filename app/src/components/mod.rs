@@ -11,9 +11,5 @@ pub fn Typography(
     children: Children,
     #[prop(optional, into)] class: String,
 ) -> impl IntoView {
-    view! { cx,
-        <p class=format!("prose dark:prose-invert {class}")>
-            {children(cx)}
-        </p>
-    }
+    view! { cx, <p class=format!("prose dark:prose-invert {class}")>{children(cx)}</p> }
 }

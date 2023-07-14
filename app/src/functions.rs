@@ -111,6 +111,26 @@ pub async fn delete_list(
     Ok(())
 }
 
+#[server(EditList, "/api")]
+pub async fn edit_list(
+    cx: Scope,
+    list_id: uuid::Uuid,
+    title: String,
+) -> Result<(), ServerFnError> {
+    let db = db(cx)?;
+
+    let mut list: lists::ActiveModel = lists::Entity::find_by_id(list_id)
+        .one(db.conn())
+        .await?
+        .ok_or_else(|| ServerFnError::ServerError("No list found".to_string()))?
+        .into();
+
+    list.title = entity::sea_orm::Set(title);
+
+    list.update(db.conn()).await?;
+    Ok(())
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Order {
     Asc,

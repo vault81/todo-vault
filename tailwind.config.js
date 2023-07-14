@@ -7,6 +7,7 @@ module.exports = {
     "./node_modules/flowbite/**/*.js",
   ],
   safelist: [
+    "hidden",
     "shadow-lg",
     "backdrop-blur-sm",
     "rounded-l-lg",

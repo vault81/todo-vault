@@ -19,7 +19,7 @@ resolver = "2"
 
 [workspace.dependencies]
 leptos = { version = "=0.4.2", default-features = false, features = ["serde", "nightly"] }
-leptos_dom = { version = "=0.4.2",  default-features = false, features = ["nightly"] }
+leptos_dom = { version = "=0.4.2", default-features = false, features = ["nightly"] }
 leptos_hot_reload = { version = "=0.4.2", default-features = false, features = ["nightly"] }
 leptos_macro = { version = "=0.4.2", default-features = false, features = ["nightly"] }
 leptos_meta = { version = "=0.4.2", default-features = false, features = ["nightly"] }
