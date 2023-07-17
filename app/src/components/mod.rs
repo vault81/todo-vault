@@ -1,13 +1,12 @@
-mod button;
-mod dropdown_button;
-mod form_drawer;
-mod main_page;
-mod svg;
-mod table;
+use leptos::*;
+use leptos_dom::*;
+use leptos_router::*;
 
-pub use button::*;
-pub use dropdown_button::*;
-pub use form_drawer::*;
-pub use main_page::*;
-pub use svg::*;
-pub use table::*;
+#[component]
+pub fn Typography(
+    cx: Scope,
+    children: Children,
+    #[prop(optional, into)] class: String,
+) -> impl IntoView {
+    view! { cx, <p class=format!("prose dark:prose-invert {class}")>{children(cx)}</p> }
+}

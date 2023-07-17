@@ -11,53 +11,29 @@ leptos_dom.workspace = true
 leptos_meta.workspace = true
 leptos_router.workspace = true
 leptos_axum = { workspace = true, optional = true }
+leptos_icons = { version = "0.0.15", features = [ "IoSave", "OcFileAddedSm", "OcPencilLg", "OcTrashLg", "macros" ] }
+leptos-use = { version = "0.5.0", features = ["storage"]}
+wasm-bindgen = { workspace = true }
 
 entity = { path = "../entity", default-features = false }
 
 broadcaster = { version = "=1.0.0", optional = true }
 cfg-if = "=1.0.0"
 http = "=0.2.9"
-thiserror = "=1.0.40"
-serde = { version = "=1.0.160", features = [
-  "derive",
-  "serde_derive",
-  "alloc",
-  "rc",
-] }
+thiserror = "=1.0.43"
+serde = { version = "=1.0.171", features = ["derive", "serde_derive", "alloc", "rc"] }
 lazy_static = "=1.4.0"
-getrandom = { version = "=0.2.9", features = ["js", "std"] }
+getrandom = { version = "=0.2.10", features = ["js", "std"] }
 tracing = { version = "=0.1.37", features = ["async-await", "log"] }
-base64 = "=0.21.0"
+base64 = "=0.21.2"
 convert_case = "=0.6.0"
 rand = "=0.8.5"
-wasm-bindgen = "=0.2.84"
-web-sys = { version = "=0.3.61", features = [
-  "console",
-  "Document",
-  "DomRect",
-  "Element",
-  "Event",
-  "EventTarget",
-  "Storage",
-  "Window",
-] }
-js-sys = "=0.3.61"
-serde_json = { version = "=1.0.96", features = ["alloc"] }
+web-sys = { version = "=0.3.64", features = ["console", "Document", "DomRect", "Element", "Event", "EventTarget", "Storage", "Window"] }
+js-sys = "=0.3.64"
+serde_json = { version = "=1.0.100", features = ["alloc"] }
 futures = "=0.3.28"
 
 [features]
 default = ["ssr"]
-hydrate = [
-  "leptos/hydrate",
-  "leptos_meta/hydrate",
-  "leptos_router/hydrate",
-  "entity/client-side",
-]
-ssr = [
-  "entity/server-side",
-  "leptos/ssr",
-  "leptos_meta/ssr",
-  "leptos_router/ssr",
-  "dep:leptos_axum",
-  "dep:broadcaster",
-]
+hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate", "entity/client-side"]
+ssr = ["entity/server-side", "leptos/ssr", "leptos_meta/ssr", "leptos_router/ssr", "leptos-use/ssr", "dep:leptos_axum", "dep:broadcaster"]

@@ -7,6 +7,7 @@ module.exports = {
     "./node_modules/flowbite/**/*.js",
   ],
   safelist: [
+    "hidden",
     "shadow-lg",
     "backdrop-blur-sm",
     "rounded-l-lg",
@@ -57,5 +58,9 @@ module.exports = {
     require("@tailwindcss/forms"),
     require("flowbite/plugin"),
     require("flowbite-typography"),
+    require("daisyui"),
   ],
+  daisyui: {
+    logs: false,
+  },
 };

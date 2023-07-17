@@ -23,6 +23,15 @@ impl Related<super::todos::Entity> for Entity {
     }
 }
 
+impl Default for Model {
+    fn default() -> Self {
+        Self {
+            id:    uuid::Uuid::new_v4(),
+            title: "default".to_string(),
+        }
+    }
+}
+
 impl ActiveModelBehavior for ActiveModel {}
 
 impl ActiveModel {

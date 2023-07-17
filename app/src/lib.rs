@@ -8,8 +8,6 @@ mod functions;
 mod pages;
 mod utils;
 
-#[cfg(feature = "ssr")]
-pub use functions::register_server_functions;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -32,25 +30,7 @@ pub fn App(cx: Scope) -> impl IntoView {
                     <Route
                         path="/"
                         view=move |cx| {
-                            view! { cx, <AboutPage/> }
-                        }
-                    />
-                    <Route
-                        path="/todo"
-                        view=move |cx| {
-                            view! { cx, <MyTodoListsPage/> }
-                        }
-                    />
-                    <Route
-                        path="/todo/:list_id"
-                        view=move |cx| {
-                            view! { cx, <TodoListPage/> }
-                        }
-                    />
-                    <Route
-                        path="/about"
-                        view=move |cx| {
-                            view! { cx, <AboutPage/> }
+                            view! { cx, <IndexPage/> }
                         }
                     />
                 </Routes>

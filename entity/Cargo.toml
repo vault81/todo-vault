@@ -14,33 +14,18 @@ migration = { path = "../migration", optional = true }
 
 async-std = { version = "=1.12.0", features = ["attributes", "tokio1"] }
 derive_more = "=0.99.17"
-figment = { version = "=0.10.8", features = [
-  "toml",
-  "json",
-  "env",
-  "yaml",
-], optional = true }
-serde = { version = "=1.0.160", features = [
-  "derive",
-  "serde_derive",
-  "alloc",
-  "rc",
-] }
-thiserror = "=1.0.40"
+figment = { version = "=0.10.10", features = ["toml", "json", "env", "yaml"], optional = true }
+serde = { version = "=1.0.171", features = ["derive", "serde_derive", "alloc", "rc"] }
+thiserror = "=1.0.43"
 tracing = { version = "=0.1.37" }
-uuid = { version = "=1.3.1", features = ["v4", "v7"] }
-chrono = { version = "=0.4.24", features = ["serde", "alloc"] }
+uuid = { version = "=1.4.0", features = ["v4", "v7"] }
+chrono = { version = "=0.4.26", features = ["serde", "alloc"] }
 
 [dependencies.sea-orm]
-version = "=0.11.2"
+version = "=0.11.3"
 features = ["with-time", "with-json", "with-uuid"]
 
 [features]
 default = ["server-side"]
-server-side = [
-  "dep:migration",
-  "dep:figment",
-  "sea-orm/runtime-tokio-rustls",
-  "sea-orm/sqlx-sqlite",
-]
+server-side = ["dep:migration", "dep:figment", "sea-orm/runtime-tokio-rustls", "sea-orm/sqlx-sqlite"]
 client-side = []

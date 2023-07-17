@@ -69,8 +69,6 @@ where
     let last_timeout_id = std::cell::RefCell::new(None);
     let callback = Rc::new(callback);
 
-    tracing::trace!("Setting up scroll listener");
-
     let on_scroll = Closure::wrap(Box::new(move |_: Event| {
         let now = js_sys::Date::now();
         let mut last_event = last_event_time.borrow_mut();
@@ -82,7 +80,6 @@ where
             }
         }
 
-        tracing::trace!("Scroll event");
         callback();
 
         // Cancel the previously scheduled catch_last_closure
@@ -92,7 +89,6 @@ where
 
         let catch_last_callback = callback.clone();
         let catch_last_closure = Closure::once(move || {
-            tracing::trace!("Scroll event catch last");
             catch_last_callback();
         });
 

@@ -15,6 +15,7 @@
     "@tailwindcss/typography": "0.5.9",
     "flowbite": "1.6.5",
     "flowbite-typography": "1.0.3",
+    "daisyui": "3.1.9",
     "rustywind": "0.15.3",
     "tailwindcss": "3.3.1"
   }

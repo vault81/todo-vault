@@ -15,13 +15,24 @@ opt-level = 3
 
 [workspace]
 members = ["app", "entity", "migration", "server", "wasm-lib"]
+resolver = "2"
 
 [workspace.dependencies]
-leptos = { version = "=0.2.5", default-features = false, features = ["serde"] }
-leptos_dom = { version = "=0.2.5", default-features = false }
-leptos_meta = { version = "=0.2.5", default-features = false }
-leptos_router = { version = "=0.2.5", default-features = false }
-leptos_axum = { version = "=0.2.5" }
+leptos = { version = "=0.4.2", default-features = false, features = ["serde", "nightly"] }
+leptos_dom = { version = "=0.4.2", default-features = false, features = ["nightly"] }
+leptos_hot_reload = { version = "=0.4.2", default-features = false, features = ["nightly"] }
+leptos_macro = { version = "=0.4.2", default-features = false, features = ["nightly"] }
+leptos_meta = { version = "=0.4.2", default-features = false, features = ["nightly"] }
+leptos_reactive = { version = "=0.4.2", default-features = false, features = ["nightly"] }
+leptos_router = { version = "=0.4.2", default-features = false }
+leptos_server = { version = "=0.4.2", default-features = false, features = ["nightly"] }
+server_fn = { version = "=0.4.2", default-features = false, features = ["nightly"] }
+server_fn_macro = { version = "=0.4.2", default-features = false, features = ["nightly"] }
+server_fn_macro_default = { version = "=0.4.2", default-features = false, features = ["nightly"] }
+leptos_axum = { version = "=0.4.2" }
+leptos_config = { version = "=0.4.2", default-features = false, features = ["nightly"] }
+leptos_integration_utils = { version = "=0.4.2", default-features = false, features = ["nightly"] }
+wasm-bindgen = "=0.2.87"
 
 [[workspace.metadata.leptos]]
 name = "todo-vault"
