@@ -11,7 +11,7 @@ leptos_dom.workspace = true
 leptos_meta.workspace = true
 leptos_router.workspace = true
 leptos_axum = { workspace = true, optional = true }
-leptos_icons = { version = "0.0.15", features = [ "OcFileAddedSm", "OcTrashLg", "macros" ] }
+leptos_icons = { version = "0.0.15", features = [ "OcFileAddedSm", "OcPencilLg", "OcTrashLg", "macros" ] }
 leptos-use = { version = "0.5.0", features = ["storage"]}
 wasm-bindgen = { workspace = true }
 

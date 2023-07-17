@@ -1,9 +1,6 @@
-mod svg;
-
 use leptos::*;
 use leptos_dom::*;
 use leptos_router::*;
-pub use svg::*;
 
 #[component]
 pub fn Typography(

@@ -65,7 +65,7 @@ fn Card(
     #[prop(optional, into)] class: String,
 ) -> impl IntoView {
     view! { cx,
-        <div class=format!("m-4 shadow-xl card card-compact {class}")>
+        <div class=format!("shadow-xl card card-compact {class}")>
             <div class="card-body">{children(cx)}</div>
         </div>
     }
@@ -100,12 +100,12 @@ fn ListCard(
             async move {
                 tracing::info!("delete list: {:?}", delete_list_p.list_id);
                 // remove from resource
+                delete_list(cx, delete_list_p.list_id).await?;
                 my_lists.update(|lists| {
                     if let Some(lists) = lists {
                         lists.retain(|list| list.id != delete_list_p.list_id);
                     }
                 });
-                delete_list(cx, delete_list_p.list_id).await?;
                 remove_from_local_storage(delete_list_p.list_id);
                 Ok::<(), ServerFnError>(())
             }
@@ -119,29 +119,58 @@ fn ListCard(
         pending
     };
 
-    // let edit_list_action =
-    //     create_multi_action(cx.clone(), move |edit_list_p: &EditList| {
-    //         let cx = cx.clone();
-    //         let edit_list_p = edit_list_p.clone();
-    //         async move {
-    //             edit_list(cx, edit_list_p.list_id, edit_list_p.title).await?;
-    //             Ok::<(), ServerFnError>(())
-    //         }
-    //     });
+    let edit_list_action =
+        create_multi_action(cx.clone(), move |edit_list_p: &EditList| {
+            let cx = cx.clone();
+            let edit_list_p = edit_list_p.clone();
+            async move {
+                edit_list(cx, edit_list_p.list_id, edit_list_p.title).await?;
+                Ok::<(), ServerFnError>(())
+            }
+        });
+    let todo = move || {
+        let id = id.clone();
+        let my_lists = my_lists
+            .read(cx.clone())
+            .expect("my_lists")
+            .iter()
+            .filter(|list| list.id == id)
+            .next()
+            .expect("no list found")
+            .to_owned();
+
+        my_lists
+    };
+    let (edit_mode, set_edit_mode) = create_signal(cx.clone(), false);
 
     view! { cx,
-        <Card class="card-bordered">
-            {format!("todo: {id}")} <MultiActionForm action=delete_list_action>
-                <input type="hidden" name="list_id" value=id.to_string()/>
-                <button class="btn btn-ghost btn-square btn-sm">
-                    <span class="sr-only">"Delete"</span>
-                    <Spinner class="w-6 h-6" hidden=move || !delete_list_pending()/>
-                    <div class:hidden=delete_list_pending>
-                        <Icon class="w-6 h-6" icon=icon!(OcTrashLg)/>
-                    </div>
-                </button>
-            </MultiActionForm>
+        <Card class="m-2 border-2 hover:border-dotted card-bordered border-base-content">
+            <div class="flex">
+                <div class="flex-auto card-title">
+                    <h2 class="text-2xl font-bold">{todo().title}</h2>
+                    <input type="text" placeholder="{todo().title}" class="w-full max-w-xs text-2xl font-bold input input-bordered input-primary" class:hidden={move || !edit_mode()}/>
+                </div>
+                <div class="flex-initial card-actions">
+            <button class="btn btn-ghost btn-square btn-sm" on:click={move |_| set_edit_mode.update(|mode| {*mode = !mode} ) }>
+                        <span class="sr-only">"Edit"</span>
+                        <Icon class="w-6 h-6" icon=icon!(OcPencilLg)/>
+                    </button>
+                    <MultiActionForm action=delete_list_action>
+                        <input type="hidden" name="list_id" value=id.to_string()/>
+                        <button class="btn btn-ghost btn-square btn-sm">
+                            <span class="sr-only">"Delete"</span>
+                            <Spinner class="w-6 h-6" hidden=move || !delete_list_pending()/>
+                            <div class:hidden=delete_list_pending>
+                                <Icon class="w-6 h-6" icon=icon!(OcTrashLg)/>
+                            </div>
+                        </button>
+                    </MultiActionForm>
+                </div>
+            </div>
+
+            // {format!("todo: {id}")}
         </Card>
+
     }
 }
 
