@@ -124,7 +124,17 @@ fn ListCard(
             let cx = cx.clone();
             let edit_list_p = edit_list_p.clone();
             async move {
-                edit_list(cx, edit_list_p.list_id, edit_list_p.title).await?;
+                edit_list(cx, edit_list_p.list_id, edit_list_p.title.clone())
+                    .await?;
+                my_lists.update(move |lists| {
+                    if let Some(lists) = lists {
+                        lists.iter_mut().for_each(|list| {
+                            if list.id == edit_list_p.list_id {
+                                list.title = edit_list_p.title.clone();
+                            }
+                        });
+                    }
+                });
                 Ok::<(), ServerFnError>(())
             }
         });
@@ -142,19 +152,42 @@ fn ListCard(
         my_lists
     };
     let (edit_mode, set_edit_mode) = create_signal(cx.clone(), false);
+    // show pencil button outside edit mode which starts edit mode
+    // show save button inside edit mode which saves the title (by submitting the form)
+    let edit_button = move || {
+        if edit_mode() {
+            view! {cx,
+                <button type="submit" class="btn btn-ghost btn-square btn-sm" on:click=move |_| {
+                    set_edit_mode.update(|mode| {*mode = !*mode} );
+                }>
+                    <span class="sr-only">"Save"</span>
+                    <Icon class="w-6 h-6" icon=icon!(IoSave)/>
+                </button>
+            }.into_view(cx)
+        } else {
+            view! {cx,
+                <button class="btn btn-ghost btn-square btn-sm" on:click=move |_| set_edit_mode.update(|mode| {*mode = !*mode} )>
+                    <span class="sr-only">"Edit"</span>
+                    <Icon class="w-6 h-6" icon=icon!(OcPencilLg)/>
+                </button>
+            }.into_view(cx)
+        }
+    };
 
     view! { cx,
         <Card class="m-2 border-2 hover:border-dotted card-bordered border-base-content">
             <div class="flex">
-                <div class="flex-auto card-title">
-                    <h2 class="text-2xl font-bold">{todo().title}</h2>
-                    <input type="text" placeholder="{todo().title}" class="w-full max-w-xs text-2xl font-bold input input-bordered input-primary" class:hidden={move || !edit_mode()}/>
-                </div>
-                <div class="flex-initial card-actions">
-            <button class="btn btn-ghost btn-square btn-sm" on:click={move |_| set_edit_mode.update(|mode| {*mode = !mode} ) }>
-                        <span class="sr-only">"Edit"</span>
-                        <Icon class="w-6 h-6" icon=icon!(OcPencilLg)/>
-                    </button>
+                <MultiActionForm class="flex" action=edit_list_action>
+                    <input type="hidden" name="list_id" value=id.to_string()/>
+                    <div class="flex-auto card-title">
+                        <h2 class="text-2xl font-bold" class:hidden={move || edit_mode()}>{todo().title}</h2>
+                        <input type="text" name="title" placeholder={todo().title} class="w-full max-w-xs text-2xl font-bold input input-bordered input-primary" class:hidden={move || !edit_mode()}/>
+                    </div>
+                    <div class="flex-none card-actions">
+                        {move || edit_button()}
+                    </div>
+                </MultiActionForm>
+                <div class="flex-none card-actions">
                     <MultiActionForm action=delete_list_action>
                         <input type="hidden" name="list_id" value=id.to_string()/>
                         <button class="btn btn-ghost btn-square btn-sm">
